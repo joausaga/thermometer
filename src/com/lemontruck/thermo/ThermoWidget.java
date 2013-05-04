@@ -3,7 +3,6 @@ package com.lemontruck.thermo;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -21,8 +20,21 @@ import com.lemontruck.thermo.exceptions.ApiException;
 import com.lemontruck.thermo.exceptions.LocationException;
 import com.lemontruck.thermo.exceptions.ParseException;
 
-public class ThermoWidget extends AppWidgetProvider {
+public class ThermoWidget extends AppWidgetProvider
+{
 	private final static String LOG = "com.lemontruck.thermo";
+	public static final String WIDGET_ID_KEY ="thermowidgetid";
+	
+	@Override
+	public void onReceive(Context context, Intent intent) {
+	    if (intent.hasExtra(WIDGET_ID_KEY)) {
+	        int[] ids = intent.getExtras().getIntArray(WIDGET_ID_KEY);
+	        this.onUpdate(context, AppWidgetManager.getInstance(context), ids);
+	    } 
+	    else { 
+	    	super.onReceive(context, intent);
+	    }
+	}
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
@@ -33,6 +45,7 @@ public class ThermoWidget extends AppWidgetProvider {
 	
 	public static class UpdateService extends Service {
 		private static String PREDEFINED_LOCATION = "Trento";
+		private static String PREDEFINED_CLICK_ACTION = "Update";
 		
 		@Override
         public void onStart(Intent intent, int startId) {
@@ -98,6 +111,11 @@ public class ThermoWidget extends AppWidgetProvider {
 		public RemoteViews buildUpdate(Context context) {
 			Resources res = context.getResources();
 			HashMap<String,String> infoLocation = null;
+			
+			Calendar cal = Calendar.getInstance();
+        	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        	String updateTime = sdf.format(cal.getTime());
+			
 			try {
 				infoLocation = getLocation(res, PREDEFINED_LOCATION);
 			} catch (LocationException e) {
@@ -123,24 +141,35 @@ public class ThermoWidget extends AppWidgetProvider {
             updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             updateViews.setTextViewText(R.id.temp_info, weatherInfo.get("temp") + "\u00B0");
             updateViews.setTextViewText(R.id.location, PREDEFINED_LOCATION);
-            updateViews.setTextViewText(R.id.last_updated, "Last Updated " + weatherInfo.get("last_updated"));
+            //updateViews.setTextViewText(R.id.last_updated, "Last Updated " + weatherInfo.get("last_updated"));
+            updateViews.setTextViewText(R.id.last_updated, "Last Updated " + updateTime);
             updateTempIconAndDesc(updateViews, weatherInfo.get("temp"), 
             					  res.getStringArray(R.array.temperature_descriptions));
             
-            // When user clicks on widget, launch the web page from where was obtained the weather info
-            String webInfoSource = res.getString(R.string.web_info_source);
-            Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInfoSource));
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* no requestCode */, 
-            														defineIntent, 0 /* no flags */);
-            updateViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
-            
-            
-            Calendar cal = Calendar.getInstance();
-        	cal.getTime();
-        	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        	String s = sdf.format(cal.getTime());
+            // When user clicks on widget force update
+            configureWidgetClick(context, updateViews);
             
 			return updateViews;
+		}
+		
+		private void configureWidgetClick(Context context, RemoteViews view) {
+			PendingIntent pendingIntent = null;
+			if (PREDEFINED_CLICK_ACTION.equalsIgnoreCase("update")) {
+				AppWidgetManager man = AppWidgetManager.getInstance(context);
+			    int[] ids = man.getAppWidgetIds(new ComponentName(context,ThermoWidget.class));
+			    Intent updateIntent = new Intent();
+			    updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+			    updateIntent.putExtra(ThermoWidget.WIDGET_ID_KEY, ids);
+			    pendingIntent = PendingIntent.getBroadcast(context, 0, updateIntent, 
+						 								   PendingIntent.FLAG_UPDATE_CURRENT);
+			}
+			else {  /* Visit the source web page */
+				Resources res = context.getResources();
+				String webInfoSource = res.getString(R.string.web_info_source);
+		        Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInfoSource));
+		        pendingIntent = PendingIntent.getActivity(context, 0, defineIntent, 0);
+			}
+			view.setOnClickPendingIntent(R.id.widget, pendingIntent);
 		}
 		
 		private void updateTempIconAndDesc(RemoteViews updateViews, String strTemp, 
