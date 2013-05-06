@@ -3,8 +3,14 @@
 
     <string name="app_name">"Thermometer Trentino"</string>
     <string name="action_settings">Settings</string>
+    <string name="dialog_title">What do you want to do?</string>
+    <string-array name="dialog_options">
+    	<item>Update Temperature</item>
+    	<item>Visit Meteotrentino</item>
+    </string-array>
+    <string name="info_source_title" formatted="false">Meteotrentino</string>
     <string name="info_source" formatted="false">"http://www.meteotrentino.it/Default.aspx"</string>
-    <string name="web_info_source" formatted="false">""http://www.meteotrentino.it/Default.aspx"</string>
+    <string name="web_info_source" formatted="false">http://www.meteotrentino.it/Default.aspx</string>
     <string name="user_agent" formatted="false">"%s/%s (Linux; Android)"</string>
     <string-array name="temperature_descriptions">
 		<item>Freezing</item>

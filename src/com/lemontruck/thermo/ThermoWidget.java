@@ -3,6 +3,7 @@ package com.lemontruck.thermo;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -15,6 +16,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.lemontruck.thermo.exceptions.ApiException;
 import com.lemontruck.thermo.exceptions.LocationException;
@@ -125,7 +127,6 @@ public class ThermoWidget extends AppWidgetProvider
 			String idLastUpdated = infoLocation.get("id_last_updated");
 			String sourceInfoURL = res.getString(R.string.info_source);
 			
-			RemoteViews updateViews = null;
 			HashMap<String, String> weatherInfo = null;
 			try {
                 // Try retrieving the weather info
@@ -138,21 +139,22 @@ public class ThermoWidget extends AppWidgetProvider
             }
 			
 			// Build an update that holds the updated widget contents
-            updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+			RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             updateViews.setTextViewText(R.id.temp_info, weatherInfo.get("temp") + "\u00B0");
             updateViews.setTextViewText(R.id.location, PREDEFINED_LOCATION);
-            //updateViews.setTextViewText(R.id.last_updated, "Last Updated " + weatherInfo.get("last_updated"));
             updateViews.setTextViewText(R.id.last_updated, "Last Updated " + updateTime);
             updateTempIconAndDesc(updateViews, weatherInfo.get("temp"), 
             					  res.getStringArray(R.array.temperature_descriptions));
             
-            // When user clicks on widget force update
-            configureWidgetClick(context, updateViews);
+            // When user clicks on widget shows a dialog window asking him/her to choose what he/she wants to do
+            Intent intent = new Intent(context, ThermoDialog.class);
+            PendingIntent pending = PendingIntent.getActivity(context, 0, intent, 0);
+            updateViews.setOnClickPendingIntent(R.id.widget, pending);
             
 			return updateViews;
 		}
 		
-		private void configureWidgetClick(Context context, RemoteViews view) {
+		private void configureWidgetClick(Context context, RemoteViews views) {
 			PendingIntent pendingIntent = null;
 			if (PREDEFINED_CLICK_ACTION.equalsIgnoreCase("update")) {
 				AppWidgetManager man = AppWidgetManager.getInstance(context);
@@ -169,7 +171,7 @@ public class ThermoWidget extends AppWidgetProvider
 		        Intent defineIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webInfoSource));
 		        pendingIntent = PendingIntent.getActivity(context, 0, defineIntent, 0);
 			}
-			view.setOnClickPendingIntent(R.id.widget, pendingIntent);
+			views.setOnClickPendingIntent(R.id.widget, pendingIntent);
 		}
 		
 		private void updateTempIconAndDesc(RemoteViews updateViews, String strTemp, 

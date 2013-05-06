@@ -4,6 +4,4 @@
     android:updatePeriodMillis="180000" 
     android:minHeight="72dip" 
     android:initialLayout="@layout/widget_layout">
-    
-
 </appwidget-provider>

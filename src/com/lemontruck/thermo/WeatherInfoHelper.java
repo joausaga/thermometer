@@ -82,9 +82,7 @@ public class WeatherInfoHelper{
         String content = getUrlContent(sourceInfoURL);
         Document doc = Jsoup.parse(content);
         Element contentTemp = doc.getElementById(idLocation);
-		Element contentLastUpdated = doc.getElementById(idLastUpdated);
 		currentTempInfo.put("temp", contentTemp.text().split(",")[0]);
-		currentTempInfo.put("last_updated", contentLastUpdated.text().split(" ")[1]);
 		
     	return currentTempInfo;
     }
