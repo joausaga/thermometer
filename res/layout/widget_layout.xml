@@ -11,62 +11,75 @@
 	android:orientation="horizontal"
 	android:weightSum="5">
 
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_weight="2"
-    android:orientation="vertical"
-    android:weightSum="5" >
-    <ImageView
-        android:id="@+id/temp_icon"
-        android:layout_width="40sp" 
-        android:layout_height="60sp"
-        android:layout_gravity="center"
-        android:layout_weight="4"
-        android:paddingTop="5dp" />
-     <TextView
-  	    android:id="@+id/temp_desc"
-  	    style="@style/Text.Small"
-  	    android:layout_width="wrap_content"
-  	    android:layout_height="wrap_content"
-  	    android:layout_weight="1"
-  	    android:layout_gravity="bottom|center"
-  	    android:gravity="bottom" />
-</LinearLayout>
-    
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_weight="3"
-    android:orientation="vertical"
-    android:weightSum="5" >
-    		
-    <TextView
-        android:id="@+id/temp_info"
-        style="@style/Text.High"
-        android:layout_width="wrap_content"
-        android:layout_height="45sp"
-        android:layout_gravity="center"
-        android:layout_weight="2"/>
-	
-    <TextView
-	    android:id="@+id/location"
-	    style="@style/Text.Medium"
+	<LinearLayout
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_weight="2"
-	    android:layout_gravity="center"
-	    android:gravity="center" />
-    
-    <TextView
-  	    android:id="@+id/last_updated"
-  	    style="@style/Text.Small"
-  	    android:layout_width="wrap_content"
-  	    android:layout_height="wrap_content"
-  	    android:layout_weight="1"
-  	    android:layout_gravity="center"
-  	    android:gravity="center" />
-  	
+	    android:orientation="vertical"
+	    android:weightSum="5" >
+	    
+	    <ImageView
+	        android:id="@+id/temp_icon"
+	        android:layout_width="40sp" 
+	        android:layout_height="60sp"
+	        android:layout_gravity="center"
+	        android:layout_weight="4"
+	        android:paddingTop="5dp" />
+	    
+	     <TextView
+	  	    android:id="@+id/temp_desc"
+	  	    style="@style/Text.Small"
+	  	    android:layout_width="wrap_content"
+	  	    android:layout_height="wrap_content"
+	  	    android:layout_weight="1"
+	  	    android:layout_gravity="bottom|center"
+	  	    android:gravity="bottom" />
 	</LinearLayout>
+    
+	<LinearLayout
+	    android:id="@+id/temp_info_container"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="3"
+	    android:orientation="vertical"
+	    android:weightSum="5" >
+	    
+	    <ProgressBar
+	        android:id="@+id/updating_circle"
+	        style="@android:style/Widget.ProgressBar.Large"
+	        android:layout_width="wrap_content"
+	        android:layout_height="45sp"
+	        android:layout_weight="2"
+	        android:paddingTop="17dp"
+	        android:layout_gravity="center"
+	        android:visibility="gone" />
+	    
+	    <TextView
+	        android:id="@+id/temp_info"
+	        style="@style/Text.High"
+	        android:layout_width="wrap_content"
+	        android:layout_height="45sp"
+	        android:layout_gravity="center"
+	        android:layout_weight="2"/>
+		
+	    <TextView
+		    android:id="@+id/location"
+		    style="@style/Text.Medium"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="2"
+		    android:layout_gravity="center"
+		    android:gravity="center" />
+	    
+	    <TextView
+	  	    android:id="@+id/last_updated"
+	  	    style="@style/Text.Small"
+	  	    android:layout_width="wrap_content"
+	  	    android:layout_height="wrap_content"
+	  	    android:layout_weight="1"
+	  	    android:layout_gravity="center"
+	  	    android:gravity="center" />
+	  	
+		</LinearLayout>
 
 </LinearLayout>

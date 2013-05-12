@@ -3,6 +3,7 @@
 
     <string name="app_name">"Thermometer Trentino"</string>
     <string name="action_settings">Settings</string>
+    <string name="no_network_message">No network connection</string>
     <string name="dialog_title">What do you want to do?</string>
     <string-array name="dialog_options">
     	<item>Update Temperature</item>
