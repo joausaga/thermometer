@@ -8,6 +8,7 @@
     <string-array name="dialog_options">
     	<item>Update Temperature</item>
     	<item>Visit Meteotrentino</item>
+    	<item>Configure Widget</item>
     </string-array>
     <string name="info_source_title" formatted="false">Meteotrentino</string>
     <string name="info_source" formatted="false">"http://www.meteotrentino.it/Default.aspx"</string>

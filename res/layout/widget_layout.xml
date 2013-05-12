@@ -46,11 +46,11 @@
 	    
 	    <ProgressBar
 	        android:id="@+id/updating_circle"
-	        style="@android:style/Widget.ProgressBar.Large"
+	        style="@android:style/Widget.ProgressBar.Small"
 	        android:layout_width="wrap_content"
-	        android:layout_height="45sp"
+	        android:layout_height="wrap_content"
 	        android:layout_weight="2"
-	        android:paddingTop="17dp"
+	        android:paddingTop="10dp"
 	        android:layout_gravity="center"
 	        android:visibility="gone" />
 	    
