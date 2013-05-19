@@ -26,6 +26,13 @@
             android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true" />
         
+        <activity android:name=".ConfigActivity"
+         		  android:launchMode="singleTop">
+    		<intent-filter>
+        		<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+    		</intent-filter>
+		</activity>
+        
     </application>
     
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />

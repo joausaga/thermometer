@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">"Thermometer Trentino"</string>
+    <string name="app_name">Thermometer Trentino</string>
     <string name="action_settings">Settings</string>
     <string name="no_network_message">No network connection</string>
     <string name="dialog_title">What do you want to do?</string>
     <string-array name="dialog_options">
     	<item>Update Temperature</item>
-    	<item>Visit Meteotrentino</item>
+    	<item>Visit Meteotrentino.it</item>
     	<item>Configure Widget</item>
     </string-array>
-    <string name="info_source_title" formatted="false">Meteotrentino</string>
-    <string name="info_source" formatted="false">"http://www.meteotrentino.it/Default.aspx"</string>
-    <string name="web_info_source" formatted="false">http://www.meteotrentino.it/Default.aspx</string>
-    <string name="user_agent" formatted="false">"%s/%s (Linux; Android)"</string>
+    <string name="info_source_title" formatted="false" translatable="false">Meteotrentino</string>
+    <string name="info_source" formatted="false" translatable="false">"http://www.meteotrentino.it/Default.aspx"</string>
+    <string name="web_info_source" formatted="false" translatable="false">http://www.meteotrentino.it/Default.aspx</string>
+    <string name="user_agent" formatted="false" translatable="false">"%s/%s (Linux; Android)"</string>
     <string-array name="temperature_descriptions">
 		<item>Freezing</item>
 		<item>Cold</item>
@@ -21,7 +20,7 @@
 		<item>Hot</item>
 		<item>Boiling</item>
 	</string-array>
-    <string-array name="locations">
+    <string-array name="locations" translatable="false">
 		<item>Trento</item>
 		<item>Rovereto</item>
 		<item>Pergine</item>
@@ -31,36 +30,53 @@
 		<item>Male</item>
 		<item>Tione</item>
 	</string-array>
-    <string-array name="info_location_0">
+    <string-array name="info_location_0" translatable="false">
         <item>ultimi_dati1_GridUltimiDati_ctl02_txtTemperatura</item>
         <item>ultimi_dati1_GridUltimiDati_ctl02_txtDataOra</item>
     </string-array>
-    <string-array name="info_location_1">
+    <string-array name="info_location_1" translatable="false">
         <item>ultimi_dati1_GridUltimiDati_ctl03_txtTemperatura</item>
         <item>ultimi_dati1_GridUltimiDati_ctl03_txtDataOra</item>
     </string-array>
-    <string-array name="info_location_2">
+    <string-array name="info_location_2" translatable="false">
         <item>ultimi_dati1_GridUltimiDati_ctl04_txtTemperatura</item>
         <item>ultimi_dati1_GridUltimiDati_ctl04_txtDataOra</item>
     </string-array>
-    <string-array name="info_location_3">
+    <string-array name="info_location_3" translatable="false">
         <item>ultimi_dati1_GridUltimiDati_ctl05_txtTemperatura</item>
         <item>ultimi_dati1_GridUltimiDati_ctl05_txtDataOra</item>
     </string-array>
-    <string-array name="info_location_4">
+    <string-array name="info_location_4" translatable="false">
         <item>ultimi_dati1_GridUltimiDati_ctl06_txtTemperatura</item>
         <item>ultimi_dati1_GridUltimiDati_ctl06_txtDataOra</item>
     </string-array>
-    <string-array name="info_location_5">
+    <string-array name="info_location_5" translatable="false">
         <item>ultimi_dati1_GridUltimiDati_ctl07_txtTemperatura</item>
         <item>ultimi_dati1_GridUltimiDati_ctl07_txtDataOra</item>
     </string-array>
-    <string-array name="info_location_6">
+    <string-array name="info_location_6" translatable="false">
         <item>ultimi_dati1_GridUltimiDati_ctl08_txtTemperatura</item>
         <item>ultimi_dati1_GridUltimiDati_ctl08_txtDataOra</item>
     </string-array>
-    <string-array name="info_location_7">
+    <string-array name="info_location_7" translatable="false">
         <item>ultimi_dati1_GridUltimiDati_ctl09_txtTemperatura</item>
         <item>ultimi_dati1_GridUltimiDati_ctl09_txtDataOra</item>
-    </string-array>    
+    </string-array>
+    <string name="choose_location" formatted="false">Choose the location</string>
+    <string name="choose_temperature_unit" formatted="false">Select the unit to measure the temperature</string>
+    <string name="fahrenheit" formatted="false">Fahrenheit</string>
+    <string name="celsius" formatted="false">Celsius</string>
+    <string name="choose_frequency" formatted="false">Choose the update frequency of the widget</string>
+    <string-array name="frequency_update">
+		<item>30 minutes</item>
+		<item>15 minutes</item>
+		<item>5 minutes</item>
+	</string-array>
+	<string name="foot_text">Powered by Meteotrentino</string>
+	<string name="loading">Loading&#x2026;</string>
+	<string name="behavior_message">(The widget will be updated every 30 minutes)</string>
+	<string name="error">Error when retriving the information</string>
+	<string name="last_updated">Last Updated</string>
+	<string name="label_cancel_button">Cancel</string>
+	<string name="label_save_button">Save</string>
 </resources>

@@ -1,0 +1,107 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ConfigActivity" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+        
+         <TextView
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:text="@string/choose_location"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+         <Spinner
+             android:id="@+id/location_list"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:entries="@array/locations" />
+         
+          <TextView
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:text="@string/choose_temperature_unit"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+          
+          <RadioGroup
+            android:id="@+id/units" 
+            android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dip"
+            android:paddingRight="20dip"
+            android:paddingBottom="20dip"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/unit_celsius" 
+                android:layout_width="fill_parent" 
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/celsius"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+              
+            <RadioButton
+                android:id="@+id/unit_fahrenheit" 
+                android:layout_width="fill_parent" 
+                android:layout_height="wrap_content"
+                android:text="@string/fahrenheit"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </RadioGroup>
+        
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1" />
+		   	
+       	<TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            android:text="@string/behavior_message"
+            android:textAppearance="@style/Text.Medium" 
+            android:gravity="center"/>
+       	
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1" />
+        
+	   	<TextView
+	   	    android:layout_width="fill_parent"
+	   	    android:layout_height="wrap_content"
+	   	    android:padding="10dip"
+	   	    android:text="@string/foot_text"
+	   	    android:textAppearance="@style/Text.Small"
+	   	    android:gravity="center" />
+        
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            style="@android:style/ButtonBar">
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/label_cancel_button" />
+            
+            <Button
+                android:id="@+id/save_button"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/label_save_button" />
+
+        </LinearLayout>
+         
+    </LinearLayout>  
+
+</RelativeLayout>
