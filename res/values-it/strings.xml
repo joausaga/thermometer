@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Termometro Trentino</string>
+    <string name="action_settings">Configurazioni</string>
+    <string name="no_network_message">Senza connessione di rete</string>
+    <string name="dialog_title">Cosa voi fare?</string>
+    <string-array name="dialog_options">
+    	<item>Aggiornare la temperatura</item>
+    	<item>Visitare Meteotrentino.it</item>
+    	<item>Configurare il widget</item>
+    </string-array>
+    <string-array name="temperature_descriptions">
+		<item>Gelato</item>
+		<item>Frio</item>
+		<item>Caldo</item>
+		<item>Caloroso</item>
+		<item>Ebollizione</item>
+	</string-array>
+    <string name="choose_location" formatted="false">Scegli una località</string>
+    <string name="choose_temperature_unit" formatted="false">Selezionare l\'unità che si desidera misurare la temperatura</string>
+    <string name="fahrenheit" formatted="false">Fahrenheit</string>
+    <string name="celsius" formatted="false">Celsius</string>
+    <string name="choose_frequency" formatted="false">Selezionare la frequenza con la quale il widget viene aggiornato</string>
+    <string-array name="frequency_update">
+		<item>30 minuti</item>
+		<item>15 minuti</item>
+		<item>5 minuti</item>
+	</string-array>
+	<string name="foot_text">Powered by Meteotrentino</string>
+	<string name="loading">Caricamento in corso&#x2026;</string>
+	<string name="behavior_message">(Il widget viene aggiornato ogni 30 minuti)</string>
+	<string name="error">Impossibile ottenere le informazioni</string>
+	<string name="last_updated">Ultimo aggiornamento</string>
+	<string name="label_cancel_button">Annullare</string>
+	<string name="label_save_button">Salva</string>
+</resources>
