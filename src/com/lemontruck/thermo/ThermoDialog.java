@@ -29,13 +29,14 @@ public class ThermoDialog extends Activity {
         builder.setItems(R.array.dialog_options, new DialogInterface.OnClickListener() {
         	public void onClick(DialogInterface dialog, int which) {
         		Context context = getApplicationContext();
+        		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         		if (which == 0) { /* Force widget update */
-    				AppWidgetManager man = AppWidgetManager.getInstance(context);
-    			    int[] ids = man.getAppWidgetIds(new ComponentName(context,ThermoWidget.class));
+    				ThermoWidget.forceUpdate(context, appWidgetManager, false);
+    				/*int[] ids = man.getAppWidgetIds(new ComponentName(context,ThermoWidget.class));
     			    Intent updateIntent = new Intent();
     			    updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
     			    updateIntent.putExtra(ThermoWidget.WIDGET_ID_KEY, ids);
-    			    context.sendBroadcast(updateIntent);
+    			    context.sendBroadcast(updateIntent);*/
     			}
     			if (which == 1) {  /* Visit the source web page */
     				Resources res = context.getResources();
@@ -44,8 +45,13 @@ public class ThermoDialog extends Activity {
     		        Intent intent = new Intent(Intent.ACTION_VIEW, url);
     		        startActivity(intent);
     			}
-    			if (which ==2) {
-    				Toast.makeText(context, "Not implemented yet", Toast.LENGTH_SHORT).show();
+    			if (which == 2) {
+    				int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context,ThermoWidget.class));
+    				Intent intent = new Intent();
+    			    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, ids[0]); //TODO Configure just the first instance created
+    			    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    				intent.setComponent(new ComponentName("com.lemontruck.thermo","com.lemontruck.thermo.ConfigActivity"));
+    				startActivity(intent);
     			}
     			finish();
             }
