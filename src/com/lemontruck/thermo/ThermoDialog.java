@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.RemoteViews;
-import android.widget.Toast;
  
 public class ThermoDialog extends Activity {
 	private final static String LOG = "com.lemontruck.thermo";
@@ -31,7 +29,7 @@ public class ThermoDialog extends Activity {
         		Context context = getApplicationContext();
         		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         		if (which == 0) { /* Force widget update */
-    				ThermoWidget.forceUpdate(context, appWidgetManager, false);
+    				//ThermoWidget.forceUpdate(context, false);
     				/*int[] ids = man.getAppWidgetIds(new ComponentName(context,ThermoWidget.class));
     			    Intent updateIntent = new Intent();
     			    updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);

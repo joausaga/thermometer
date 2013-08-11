@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Termometro Trentino</string>
+    <string name="app_name">Meteo Termometro</string>
     <string name="action_settings">Configurazioni</string>
     <string name="no_network_message">Senza connessione di rete</string>
     <string name="dialog_title">Cosa voi fare?</string>
@@ -16,6 +16,14 @@
 		<item>Caloroso</item>
 		<item>Ebollizione</item>
 	</string-array>
+	<string-array name="countries">
+	    <item>Italia</item>
+		<item>Paraguay</item>
+	</string-array>
+	<string-array name="locations_py">
+		<item>Asuncion</item>
+		<item>Ciudad del Este</item>
+	</string-array>
     <string name="choose_location" formatted="false">Scegli una località</string>
     <string name="choose_temperature_unit" formatted="false">Selezionare l\'unità che si desidera misurare la temperatura</string>
     <string name="fahrenheit" formatted="false">Fahrenheit</string>
@@ -26,11 +34,12 @@
 		<item>15 minuti</item>
 		<item>5 minuti</item>
 	</string-array>
-	<string name="foot_text">Powered by Meteotrentino</string>
 	<string name="loading">Caricamento in corso&#x2026;</string>
 	<string name="behavior_message">(Il widget viene aggiornato ogni 30 minuti)</string>
 	<string name="error">Impossibile ottenere le informazioni</string>
 	<string name="last_updated">Ultimo aggiornamento</string>
 	<string name="label_cancel_button">Annullare</string>
 	<string name="label_save_button">Salva</string>
+	<string name="label_tab_settings">Impostazioni</string>
+	<string name="label_tab_statistics">Statistiche</string>
 </resources>

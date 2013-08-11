@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -15,15 +15,13 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.IBinder;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
-
-import com.lemontruck.thermo.exceptions.ApiException;
-import com.lemontruck.thermo.exceptions.LocationException;
-import com.lemontruck.thermo.exceptions.NoNetworkException;
-import com.lemontruck.thermo.exceptions.ParseException;
+import com.lemontruck.thermo.exceptions.LocationException;;
 
 public class ThermoWidget extends AppWidgetProvider
 {
@@ -32,26 +30,16 @@ public class ThermoWidget extends AppWidgetProvider
 	private static final String PREFS_NAME = "com.lemontruck.thermo.ThermoWidget";
 	private static boolean networkAvailable = true;
 	
-	public static void forceUpdate(Context context, AppWidgetManager appWidgetManager,
-								   boolean newConfiguration) 
+	public static void remakeWidget(Context context,
+									AppWidgetManager appWidgetManager,
+									int appWidgetId) 
 	{
 		RemoteViews updateViews = new RemoteViews(context.getPackageName(), 
 												  R.layout.widget_layout);
 		updateViews = cleanWidget(updateViews);
 		if (existNetworkConnection(context)) {
-			if (newConfiguration) {
-				startOverWidget(context,updateViews);
-				networkAvailable = true;
-			}
-			else
-				if (networkAvailable) {
-					updateTemperature(context, updateViews);
-					networkAvailable = true;
-				}
-				else {
-					startOverWidget(context,updateViews);
-					networkAvailable = true;
-				}
+			startOverWidget(context,updateViews);
+			networkAvailable = true;
 		}
 		else {
 			networkAvailable = false;
@@ -60,28 +48,30 @@ public class ThermoWidget extends AppWidgetProvider
 	}
 	
 	private static void startOverWidget(Context context, RemoteViews views) {
+		Log.i(LOG, "Starting startOverWidget method...");
 		views = turnOnMessageContainer(views);
 		views.setViewVisibility(R.id.updating_widget, View.VISIBLE);
 		Resources res = context.getResources();
 		views.setTextViewText(R.id.message, res.getString(R.string.loading));
 		doUpdate(context,views);
-		context.startService(new Intent(context, UpdateService.class));
+		//context.startService(new Intent(context, UpdateService.class));
+		getWeatherInfo(context, views);
 	}
 	
-	@Override
+	/*@Override
 	public void onEnabled(Context context) {
 		RemoteViews updateViews = new RemoteViews(context.getPackageName(), 
 												  R.layout.widget_layout);
 		startOverWidget(context,updateViews);
-	}
+	}*/
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-	    if (intent.hasExtra(WIDGET_ID_KEY)) {
+		if (intent.hasExtra(WIDGET_ID_KEY)) {
 	        int[] ids = intent.getExtras().getIntArray(WIDGET_ID_KEY);
 	        this.onUpdate(context, AppWidgetManager.getInstance(context), ids);
 	    } 
-	    else { 
+	    else {
 	    	super.onReceive(context, intent);
 	    }
 	}
@@ -93,6 +83,7 @@ public class ThermoWidget extends AppWidgetProvider
 		RemoteViews updateViews = new RemoteViews(context.getPackageName(), 
 												  R.layout.widget_layout);
 		updateViews = cleanWidget(updateViews);
+		Log.i(LOG, "On onUpdate method...");
 		if (existNetworkConnection(context)) {
 			if (networkAvailable) {
 				updateTemperature(context, updateViews);
@@ -128,7 +119,7 @@ public class ThermoWidget extends AppWidgetProvider
 		views = turnOnTempInfoContainers(views);
 		views = showUpdatingWheel(context, views);
 		doUpdate(context,views);
-		context.startService(new Intent(context, UpdateService.class));
+		getWeatherInfo(context, views);
 	}
 	
 	private static RemoteViews showUpdatingWheel(Context context, RemoteViews updateViews) {
@@ -150,7 +141,7 @@ public class ThermoWidget extends AppWidgetProvider
 		if (message.equals(""))
 			message = res.getString(R.string.no_network_message);
 		updateViews.setTextViewText(R.id.message, message);
-		UpdateService.bindActionOnClick(context, updateViews);
+		bindActionOnClick(context, updateViews);
 		doUpdate(context,updateViews);
 	}
 	
@@ -178,196 +169,156 @@ public class ThermoWidget extends AppWidgetProvider
 		views.setViewVisibility(R.id.temp_icon, visibility);
 		views.setViewVisibility(R.id.temp_desc, visibility);
 		views.setViewVisibility(R.id.temp_info, visibility);
-		views.setViewVisibility(R.id.last_updated, visibility);
+		views.setViewVisibility(R.id.country, visibility);
 		views.setViewVisibility(R.id.location, visibility);
 		return views;
 	}
 	
-	public static class UpdateService extends Service {
+	private static void getWeatherInfo(Context context, RemoteViews views)  
+	{
+		// Try to retrieve the weather info
+		Intent intent = new Intent(context, WeatherInfoProvider.class);
+	    // Create a new Messenger for the communication back
+		UpdateHandler handler = new UpdateHandler(context, views);
+	    Messenger messenger = new Messenger(handler);
+	    intent.putExtra("MESSENGER", messenger);
+	    context.startService(intent);
+	}
+	
+	public static RemoteViews buildUpdate(Context context, RemoteViews views,
+								   HashMap<String, String> weatherInfo) 
+	throws LocationException 
+	{
+		Resources res = context.getResources();
+		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+		String country = settings.getString("country","Italy");
+    	String location = settings.getString("location","Trento");
+						
+		Calendar cal = Calendar.getInstance();
+	    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+	    String updateTime = sdf.format(cal.getTime());
+	            
+		views = cleanWidget(views);
+		views = turnOnTempInfoContainers(views);
+		views = updateWidgetViews(views,weatherInfo.get("temp"),location,
+						  		  country, updateTime,
+						  		  res.getStringArray(R.array.temperature_descriptions),
+						  		  settings,
+						  		  res);
+		hideUpdatingWheel(views);
+        
+		return views;
+	}
+			
+	private static RemoteViews updateWidgetViews(RemoteViews views, String temperature, 
+										  String location, String country,
+										  String updateTime,
+										  String[] tempDescriptions,
+										  SharedPreferences settings,
+										  Resources res) 
+	throws LocationException 
+	{
+		String unit = settings.getString("unit","Celsius");
+		Integer intTemperature = Integer.parseInt(temperature);
+		if (unit.equalsIgnoreCase("Fahrenheit"))
+			intTemperature = (intTemperature * 9)/5+32; //Convert the temperature in celsius to fahrenheit
+		views.setTextViewText(R.id.temp_info, intTemperature.toString() + "\u00B0");
+        views.setTextViewText(R.id.location, location);
+        views.setTextViewText(R.id.country, country);
+        views.setTextViewText(R.id.last_update, updateTime);
+        views = updateTempIconAndDesc(views, temperature, 
+        					  		  tempDescriptions);
+        return views;
+	}
+			
+	private static RemoteViews updateTempIconAndDesc(RemoteViews updateViews, String strTemp, 
+									   String[] temp_desc) {
+		Integer temperature = Integer.valueOf(strTemp);
+		if (temperature <= 0) {
+			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.lowest_blue);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[0]);
+		}
+		if (temperature >= 1 && temperature <= 15) {
+			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.blue);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[1]);
+		}
+		if (temperature >= 16 && temperature <= 26) {
+			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.orange);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[2]);
+		}
+		if (temperature >= 27 && temperature <= 35) {
+			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.red);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[3]);
+		}
+		if (temperature >= 36) {
+			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.purple);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[4]);
+		}
+		return updateViews;
+	}
+	
+	public static void bindActionOnClick(Context context, RemoteViews views)  
+	{
+       /* When the user presses the widget 
+        * opens the config application */
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context,ThermoWidget.class));
+        Intent intent = new Intent();
+	    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, ids[0]);
+	    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setComponent(new ComponentName("com.lemontruck.thermo",
+											  "com.lemontruck.thermo.MainActivity"));
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+												  intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		views.setOnClickPendingIntent(R.id.widget, pendingIntent);
 		
-		@Override
-        public void onStart(Intent intent, int startId) { 
-			RemoteViews updateViews = new RemoteViews(this.getPackageName(), 
-													  R.layout.widget_layout);
-			Resources res = this.getResources();
-			try {
-				updateViews = buildUpdate(this, updateViews);
-				bindActionOnClick(this,updateViews);
-				doUpdate(this, updateViews);
-			}
-			catch (NoNetworkException e) {
-				Log.e(LOG, "Could not update the widget, cause: No network available");
-				ThermoWidget.turnOffWidget(this, updateViews, "");
-			}
-			catch (LocationException e) {
-				Log.e(LOG, "Could not update the widget, cause: Unkown location");
-				ThermoWidget.turnOffWidget(this, updateViews, res.getString(R.string.error));
-			}
-			catch (ApiException e) {
-				Log.e(LOG, "Could not update the widget, cause: API error");
-				ThermoWidget.turnOffWidget(this, updateViews, res.getString(R.string.error));
-			}
-			catch (ParseException e) {
-				Log.e(LOG, "Could not update the widget, cause: HTML paser error");
-				ThermoWidget.turnOffWidget(this, updateViews, res.getString(R.string.error));
-			}
-        }
-		
-		public void doUpdate(Context context, RemoteViews views) {
-			ComponentName thisWidget = new ComponentName(context, ThermoWidget.class);
-			AppWidgetManager manager = AppWidgetManager.getInstance(context);
-			manager.updateAppWidget(thisWidget, views);
+		/* When the user clicks on the refresh icon, the widget 
+	     * has to call this to update the widget */
+		intent = new Intent();
+	    intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+	    intent.putExtra(ThermoWidget.WIDGET_ID_KEY, ids);
+	    pendingIntent = PendingIntent.getBroadcast(context, 0, 
+        										 intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		views.setOnClickPendingIntent(R.id.options_container, pendingIntent);
+	}
+	
+	private static class UpdateHandler extends Handler {
+		private Context context;
+		private RemoteViews views;
+		private Resources res;
+	
+		public UpdateHandler(Context context, RemoteViews views) {
+			this.context = context;
+			this.views = views;
+			this.res = context.getResources();
 		}
 		
-		public static void bindActionOnClick(Context context, RemoteViews views) {
-			// When a user presses on the widget it shows a dialog window 
-			// asking him/her to choose what he/she wants to do
-			Intent intent = new Intent(context, ThermoDialog.class);
-			PendingIntent pending = PendingIntent.getActivity(context, 0, intent, 0);
-			views.setOnClickPendingIntent(R.id.widget, pending);
-		}
-		
-		public RemoteViews buildUpdate(Context context, RemoteViews views) 
-		throws LocationException, ApiException, ParseException, NoNetworkException 
-		{
-			Resources res = context.getResources();
-			HashMap<String,String> infoLocation = null;
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-	    	String location = settings.getString("location","Trento");
-			
-			Calendar cal = Calendar.getInstance();
-        	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        	String updateTime = sdf.format(cal.getTime());
-			
-			
-			infoLocation = getLocation(res, location);
-	        String idLocation = infoLocation.get("id_location");
-			String idLastUpdated = infoLocation.get("id_last_updated");
-			String sourceInfoURL = res.getString(R.string.info_source);
-			
-			HashMap<String, String> weatherInfo = null;
-			
-            // Try retrieving the weather info
-            if (ThermoWidget.existNetworkConnection(context)) {
-				WeatherInfoHelper.prepareUserAgent(context);
-	            weatherInfo = WeatherInfoHelper.getWeatherInfo(sourceInfoURL,idLocation, idLastUpdated);
-            }
-            else {
-            	throw new NoNetworkException("No network connection");
-            }
-            
-			views = ThermoWidget.cleanWidget(views);
-			views = turnOnTempInfoContainers(views);
-			views = updateWidgetViews(views,weatherInfo.get("temp"),location,
-							  		  updateTime,
-							  		  res.getStringArray(R.array.temperature_descriptions),
-							  		  settings,
-							  		  res);
-			ThermoWidget.hideUpdatingWheel(views);
-            
-			return views;
-		}
-		
-		private RemoteViews updateWidgetViews(RemoteViews views, String temperature, 
-											  String location, String updateTime,
-											  String[] tempDescriptions,
-											  SharedPreferences settings,
-											  Resources res) 
-		{
-			String unit = settings.getString("unit","Celsius");
-			Integer intTemperature = Integer.parseInt(temperature);
-			if (unit.equalsIgnoreCase("Fahrenheit"))
-				intTemperature = (intTemperature * 9)/5+32; //Convert the temperature in celsius to fahrenheit
-			views.setTextViewText(R.id.temp_info, intTemperature.toString() + "\u00B0");
-            views.setTextViewText(R.id.location, location);
-            views.setTextViewText(R.id.last_updated, res.getString(R.string.last_updated) + " " + updateTime);
-            views = updateTempIconAndDesc(views, temperature, 
-            					  		  tempDescriptions);
-            return views;
-		}
-		
-		private HashMap<String,String> getLocation(Resources res, String locSelected) 
-		throws LocationException 
-		{
-			HashMap<String,String> infoLocation = new HashMap<String,String>();
-			String[] locations = res.getStringArray(R.array.locations);
-			int indexLocation = -1;
-			for (int i = 0; i < locations.length; i++) {
-				if (locations[i].equalsIgnoreCase(locSelected)) {
-					indexLocation = i;
-					break;
+		public void handleMessage(Message message) {
+			if (message.arg1 == Activity.RESULT_OK) {
+				HashMap<String, String> weatherInfo = (HashMap<String, String>) message.obj;
+				try {
+					views = buildUpdate(context,views,weatherInfo);
+					bindActionOnClick(context, views);
+					ThermoWidget.doUpdate(context, views);
+				} catch (LocationException e) {
+					Log.e(LOG, "Could not update the widget, cause: Unkown location");
+					ThermoWidget.turnOffWidget(context, views, res.getString(R.string.error));
 				}
-			}
-			if (indexLocation == -1)
-				throw new LocationException("Could not find the location");
+			} 
 			else {
-				String [] dataLocation;
-				switch(indexLocation) {
-					case 0: 
-						dataLocation = res.getStringArray(R.array.info_location_0);
-						break;
-					case 1: 
-						dataLocation = res.getStringArray(R.array.info_location_1);
-						break;
-					case 2: 
-						dataLocation = res.getStringArray(R.array.info_location_2);
-						break;
-					case 3: 
-						dataLocation = res.getStringArray(R.array.info_location_3);
-						break;
-					case 4: 
-						dataLocation = res.getStringArray(R.array.info_location_4);
-						break;
-					case 5: 
-						dataLocation = res.getStringArray(R.array.info_location_5);
-						break;
-					case 6: 
-						dataLocation = res.getStringArray(R.array.info_location_6);
-						break;
-					case 7: 
-						dataLocation = res.getStringArray(R.array.info_location_7);
-						break;
-					default:
-						throw new LocationException("Could not find the location");
-				}
-				infoLocation.put("id_location", dataLocation[0]);
-				infoLocation.put("id_last_updated", dataLocation[1]);
+				Exception e = (Exception) message.obj;
+				if (e.getClass().getName().equals("ApiException"))
+					Log.e(LOG, "Could not update the widget, cause: API error");
+				else
+					if (e.getClass().getName().equals("ParseException"))
+						Log.e(LOG, "Could not update the widget, cause: HTML paser error");
+					else
+						if (e.getClass().getName().equals("LocationException"))
+							Log.e(LOG, "Could not update the widget, cause: Unkown location");
+						else
+							Log.e(LOG, "Could not update the widget, cause: Unkown cause");
+				ThermoWidget.turnOffWidget(context, views, res.getString(R.string.error));
 			}
-			
-			return infoLocation;
 		}
-		
-		private RemoteViews updateTempIconAndDesc(RemoteViews updateViews, String strTemp, 
-										   String[] temp_desc) {
-			Integer temperature = Integer.valueOf(strTemp);
-			if (temperature <= 0) {
-				updateViews.setImageViewResource(R.id.temp_icon, R.drawable.lowest_blue);
-				updateViews.setTextViewText(R.id.temp_desc, temp_desc[0]);
-			}
-			if (temperature >= 1 && temperature <= 15) {
-				updateViews.setImageViewResource(R.id.temp_icon, R.drawable.blue);
-				updateViews.setTextViewText(R.id.temp_desc, temp_desc[1]);
-			}
-			if (temperature >= 16 && temperature <= 26) {
-				updateViews.setImageViewResource(R.id.temp_icon, R.drawable.orange);
-				updateViews.setTextViewText(R.id.temp_desc, temp_desc[2]);
-			}
-			if (temperature >= 27 && temperature <= 35) {
-				updateViews.setImageViewResource(R.id.temp_icon, R.drawable.red);
-				updateViews.setTextViewText(R.id.temp_desc, temp_desc[3]);
-			}
-			if (temperature >= 36) {
-				updateViews.setImageViewResource(R.id.temp_icon, R.drawable.purple);
-				updateViews.setTextViewText(R.id.temp_desc, temp_desc[4]);
-			}
-			return updateViews;
-		}
-		
-		@Override
-        public IBinder onBind(Intent intent) {
-			// We don't need to bind to this service
-            return null;
-        }
-		
 	}
 }

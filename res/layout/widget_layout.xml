@@ -2,30 +2,31 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/widget"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
 	android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    android:paddingTop="12dp"
+    android:paddingRight="8dp"
+    android:paddingTop="5dp"
 	style="@style/WidgetBackground"
 	android:orientation="horizontal"
-	android:weightSum="5">
+	android:weightSum="6">
 
 	<LinearLayout
 	    android:id="@+id/temp_info_container_left"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_weight="2"
+	    android:paddingTop="8dp"
 	    android:orientation="vertical"
 	    android:weightSum="5" >
 	    
 	    <ImageView
 	        android:id="@+id/temp_icon"
-	        android:layout_width="40sp" 
-	        android:layout_height="60sp"
+	        android:layout_width="40sp"
+	        android:layout_height="48sp"
 	        android:layout_gravity="center"
 	        android:layout_weight="4"
-	        android:paddingTop="5dp" />
+	        android:src="@drawable/orange" />
 	    
 	     <TextView
 	  	    android:id="@+id/temp_desc"
@@ -34,7 +35,8 @@
 	  	    android:layout_height="wrap_content"
 	  	    android:layout_weight="1"
 	  	    android:layout_gravity="bottom|center"
-	  	    android:gravity="bottom" />
+	  	    android:gravity="bottom"
+	  	    android:text="Warm" />
 	</LinearLayout>
 
 	<RelativeLayout
@@ -48,7 +50,7 @@
 	    <ProgressBar
 	        android:id="@+id/updating_widget"
 	        style="@android:style/Widget.ProgressBar.Small"
-	        android:layout_width="fill_parent"
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:paddingBottom="5dp"
 	        android:visibility="gone" />
@@ -56,20 +58,20 @@
 		<TextView
 		    android:id="@+id/message"
 		    style="@style/Text.Medium"
-		    android:layout_width="fill_parent"
+		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:layout_below="@id/updating_widget"
 		    android:gravity="center" />
-
 	</RelativeLayout>
     
 	<LinearLayout
 	    android:id="@+id/temp_info_container_right"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_weight="3"
+	    android:layout_weight="2"
 	    android:orientation="vertical"
-	    android:weightSum="5" >
+	    android:weightSum="5"
+	    android:paddingBottom="5dp" >
 	    
 	    <ProgressBar
 	        android:id="@+id/updating_temp"
@@ -87,7 +89,8 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="45sp"
 	        android:layout_gravity="center"
-	        android:layout_weight="2"/>
+	        android:layout_weight="2"
+	        android:text="25c"/>
 		
 	    <TextView
 		    android:id="@+id/location"
@@ -96,17 +99,44 @@
 		    android:layout_height="wrap_content"
 		    android:layout_weight="2"
 		    android:layout_gravity="center"
-		    android:gravity="center" />
+		    android:gravity="center"
+		    android:text="Trento" />
 	    
 	    <TextView
-	  	    android:id="@+id/last_updated"
+	  	    android:id="@+id/country"
 	  	    style="@style/Text.Small"
 	  	    android:layout_width="wrap_content"
 	  	    android:layout_height="wrap_content"
 	  	    android:layout_weight="1"
 	  	    android:layout_gravity="center"
-	  	    android:gravity="center" />
-	  	
-		</LinearLayout>
+	  	    android:gravity="center"
+	  	    android:text="Italy" />
+	</LinearLayout>
 
+	<RelativeLayout
+	    android:id="@+id/options_container"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical"
+	    android:paddingRight="8dp"
+	    android:clickable="true" >
+	    
+	    <ImageView
+	        android:id="@+id/refresh_icon"
+	        android:layout_width="15dp"
+	        android:layout_height="15dp"
+	        android:layout_above="@+id/last_update"
+	        android:paddingBottom="3dp"
+	        android:src="@drawable/refresh" />
+	    
+	    <TextView
+	        android:id="@+id/last_update"
+	        style="@style/Text.Tiny"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:paddingBottom="5dp"
+	        android:text="10:80" />
+
+	</RelativeLayout>
 </LinearLayout>

@@ -24,16 +24,21 @@
     <style name="Text">
     </style>
     
-    <style name="Text.Small">
-        <item name="android:textSize">7sp</item>
+    <style name="Text.Tiny">
+        <item name="android:textSize">6sp</item>
         <item name="android:textColor">@color/white</item>
     </style>
+    <style name="Text.Small">
+        <item name="android:textSize">8sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorLink">@color/white</item>
+    </style>
     <style name="Text.Medium">
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">10sp</item>
         <item name="android:textColor">@color/white</item>
     </style>
 	<style name="Text.High">
-        <item name="android:textSize">40sp</item>
+        <item name="android:textSize">38sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/white</item>
     </style>
