@@ -69,5 +69,6 @@
 		<item>This Year</item>
 		<item>Same Day Last Year</item>
 	</string-array>
-	<string name="label_filter">Statistics about</string>
+	<string name="label_filter">Statistics of</string>
+	<string name="statistic_exception">Ops!, Meteo Thermometer could not collect yet statistics for the selected location</string>
 </resources>
