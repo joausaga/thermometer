@@ -1,2 +1,2 @@
 ====TODO====
-1. Add the tab layout and include a new views with statistic about the temperature info registered in the database.  
+1. Populate the list of the statistics view with data about the temperature within the selected range.    
