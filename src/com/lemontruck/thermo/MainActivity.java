@@ -29,7 +29,8 @@ import android.view.MenuItem;
 import com.lemontruck.thermo.helpers.AppSectionsPagerAdapter;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
-	private final static String LOG = "com.lemontruck.thermo";
+	public final static String LOG = "com.lemontruck.thermo";
+	public final static String PREFS_NAME= "com.lemontruck.thermo.ThermoWidget";
 	int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 	
     /**
