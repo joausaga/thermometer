@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.lemontruck.thermo.StatisticFragment;
 import com.lemontruck.thermo.Temperature;
 
 
@@ -54,14 +55,14 @@ public class TemperatureDataSource {
 		  return insertId;
 	  }
 	  
-	  public void deleteComment(Temperature temp) {
+	  public void deleteTemperature(Temperature temp) {
 		  long id = temp.getId();
 		  Log.i(LOG, "Temperature deleted with id: " + id);
 		  database.delete(MySQLiteHelper.TABLE_TEMP, MySQLiteHelper.COLUMN_ID + 
 				  									 " = " + id, null);
 	  }
 	  
-	  public List<Temperature> getAllComments() {
+	  public List<Temperature> getAllTemperatures() {
 		  List<Temperature> temperatures = new ArrayList<Temperature>();
 
 		  Cursor cursor = database.query(MySQLiteHelper.TABLE_TEMP,
@@ -75,6 +76,39 @@ public class TemperatureDataSource {
 		  }
 		  
 		  cursor.close();
+		  return temperatures;
+	  }
+	  
+	  public List<Temperature> getTemperatures(String country, String city, int filter) {
+		  List<Temperature> temperatures = new ArrayList<Temperature>();
+		  Cursor cursor = null;
+		  String timeCondition = "";
+		  if (filter == StatisticFragment.TODAY) timeCondition = "datetime('now','start of day')";
+		  if (filter == StatisticFragment.THISWEEK) timeCondition = "datetime('now','-7 days')";
+		  if (filter == StatisticFragment.THISMONTH) timeCondition = "datetime('now','start of month')";
+		  if (filter == StatisticFragment.THISYEAR) timeCondition = "datetime('now','start of year')";
+		  if (filter == StatisticFragment.THISSEMESTER) timeCondition = "datetime('now','-6 months')";
+		  if (filter == StatisticFragment.SAMEDAYLASTYEAR) timeCondition = "datetime('now','-365 days')";
+		  
+		  now.setToNow();
+		  String[] args = {country,city,now.toString()};
+		  String whereClause = MySQLiteHelper.COLUMN_COUNTRY + "=? AND " + MySQLiteHelper.COLUMN_CITY + "=? AND " +
+ 				  			   MySQLiteHelper.COLUMN_DATETIME + " BETWEEN " + timeCondition + " AND ?";
+		  String orderBy = MySQLiteHelper.COLUMN_DATETIME;
+		  cursor = database.query(MySQLiteHelper.TABLE_TEMP,
+			     				  allColumns, 
+			     				  whereClause, 
+			     				  args, null, null, orderBy);
+		  
+		  cursor.moveToFirst();
+		  while (!cursor.isAfterLast()) {
+			  Temperature temp = cursorToTemperature(cursor);
+			  temperatures.add(temp);
+			  cursor.moveToNext();
+		  }
+		  
+		  cursor.close();
+
 		  return temperatures;
 	  }
 	  
