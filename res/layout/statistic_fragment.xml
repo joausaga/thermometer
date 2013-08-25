@@ -12,12 +12,152 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-  -->
+-->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:textSize="24sp"
-    android:padding="32dp" />
+    android:padding="10dp"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <!-- <ImageView
+            android:id="@+id/nav_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:src="@drawable/navigation_back" />
+                		
+		<ImageView
+		    android:id="@+id/nav_forward"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:layout_alignParentTop="true"
+		    android:clickable="true"
+		    android:src="@drawable/navigation_forward" /> -->
+		
+		
+		<TextView
+		    android:id="@+id/label_filter"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_marginTop="44dp"
+		    android:text="@string/label_filter"
+		    android:paddingRight="20dp"
+		    android:textColor="@color/silver"
+		    android:textSize="11sp" />
+		
+		<Spinner
+		    android:id="@+id/filter"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginTop="25dp"
+		    android:layout_toRightOf="@id/label_filter"
+		    android:entries="@array/stat_filters" />
+        
+        <TextView
+            android:id="@+id/avg_temp"
+            style="@style/Text.AvgTempSta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/filter"
+            android:layout_centerHorizontal="true"
+            android:paddingLeft="40dp"
+            android:text="20\u00B0" />
+        
+        <TextView
+            android:id="@+id/avg_temp_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/avg_temp"
+            android:layout_alignBottom="@+id/avg_temp"
+            android:text="@string/label_average"
+            android:paddingLeft="50dp"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+		
+		<TextView
+		    android:id="@+id/min_temp_desc"
+		    style="@style/Text.Medium"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignBaseline="@+id/min_temp"
+		    android:layout_alignBottom="@+id/min_temp"
+		    android:layout_below="@+id/avg_temp"
+		    android:paddingLeft="80dp"
+		    android:paddingRight="5dp"
+		    android:text="@string/label_min" />
+		
+		<TextView
+		    android:id="@+id/min_temp"
+		    style="@style/Text.MinTempSta"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_below="@+id/avg_temp"
+		    android:layout_toRightOf="@+id/min_temp_desc"
+		    android:text="11\u00B0" />
+
+		<TextView
+		    android:id="@+id/max_temp_desc"
+		    style="@style/Text.Medium"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignBaseline="@+id/max_temp"
+		    android:layout_alignBottom="@+id/max_temp"
+		    android:layout_below="@+id/avg_temp"
+		    android:layout_toRightOf="@+id/min_temp"
+		    android:paddingLeft="20dp"
+		    android:paddingRight="5dp"
+		    android:text="@string/label_max" />
+		
+		<TextView
+		    android:id="@+id/max_temp"
+		    style="@style/Text.MaxTempSta"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_below="@+id/avg_temp"
+		    android:layout_toRightOf="@+id/max_temp_desc"
+		    android:text="25\u00B0" />
+
+		<!--  <TextView
+		    android:id="@+id/date"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignLeft="@+id/avg_temp_desc"
+		    android:layout_centerVertical="true"
+		    android:text="Today"
+		    android:textColor="#FFBB33"
+		    android:textSize="15sp" /> -->
+
+		<TextView
+		    android:id="@+id/label_location"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"
+		    android:layout_alignParentTop="true"
+		    android:textColor="@color/white"
+		    android:textSize="12sp" />
+		
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ListView
+            android:id="@+id/listView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </ListView>
+
+    </ScrollView>
+
+</LinearLayout>

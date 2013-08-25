@@ -40,6 +40,18 @@
 	<string name="last_updated">Última actualización</string>
 	<string name="label_cancel_button">Cancelar</string>
 	<string name="label_save_button">Guardar</string>
-	<string name="label_tab_settings">Configuraciones</string>
-	<string name="label_tab_statistics">Estadísticas</string>
+	<string name="label_tab_settings">CONFIGURACIONES</string>
+	<string name="label_tab_statistics">ESTADISTICAS</string>
+	<string name="label_average">Prom</string>
+	<string name="label_min">Min</string>
+	<string name="label_max">Max</string>
+	<string-array name="stat_filters">
+		<item>Hoy</item>
+		<item>Esta Semana</item>
+		<item>Este Mes</item>
+		<item>Este Semestre</item>
+		<item>Este Año</item>
+		<item>Mismo día del año pasado</item>
+	</string-array>
+	<string name="label_filter">Estadísticas sobre</string>
 </resources>
