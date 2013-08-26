@@ -1,5 +1,9 @@
 package com.lemontruck.thermo;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -141,5 +145,51 @@ public class StatisticFragment extends Fragment {
     	tempValues.put("max", max.toString());
     	
     	return tempValues;
+    }
+    
+    private ArrayList<int[]> aggregateTempByHour(List<Temperature> temperatures) {
+    	ArrayList<int[]> tempByHour = new ArrayList<int[]>(24);
+    	
+    	for (int i = 0; i < temperatures.size(); i++) {
+    		Date tempDateTime = temperatures.get(i).getDatetime();
+    		Integer tempVal = temperatures.get(i).getTemperature();
+    		SimpleDateFormat dateFormat = new SimpleDateFormat("HH");
+    		Integer hour = Integer.parseInt(dateFormat.format(tempDateTime));
+    		int[] tempMeasure = tempByHour.get(hour); 
+    		if (tempMeasure == null) {
+    			tempMeasure = new int[2];
+    			tempMeasure[1] = 0;
+    		}
+    		else {
+    			tempMeasure[1] += 1;
+    		}
+    		tempMeasure[0] += tempVal;
+    		tempByHour.add(hour, tempMeasure);
+    	}
+    	
+    	return tempByHour;
+    }
+    
+    private ArrayList<int[]> aggregateTempByDay(List<Temperature> temperatures) {
+    	ArrayList<int[]> tempByDay = new ArrayList<int[]>(7);
+    	
+    	for (int i = 0; i < temperatures.size(); i++) {
+    		Date tempDateTime = temperatures.get(i).getDatetime();
+    		Integer tempVal = temperatures.get(i).getTemperature();
+    		SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
+    		Integer day = Integer.parseInt(dateFormat.format(tempDateTime));
+    		int[] tempMeasure = tempByDay.get(day); 
+    		if (tempMeasure == null) {
+    			tempMeasure = new int[2];
+    			tempMeasure[1] = 0;
+    		}
+    		else {
+    			tempMeasure[1] += 1;
+    		}
+    		tempMeasure[0] += tempVal;
+    		tempByDay.add(day, tempMeasure);
+    	}
+    	
+    	return tempByDay;
     }
 }
