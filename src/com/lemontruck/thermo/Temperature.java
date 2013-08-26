@@ -1,9 +1,15 @@
 package com.lemontruck.thermo;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import android.util.Log;
+
 public class Temperature {
 	private long id;
 	private int temperature;
-	private String datetime;
+	private Date datetime;
 	private String country;
 	private String city;
 	
@@ -24,10 +30,15 @@ public class Temperature {
 	}
 	
 	public void setDatetime(String datetime) {
-		this.datetime = datetime;
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
+		try {
+			this.datetime = formatter.parse(datetime);
+		} catch (ParseException e) {
+			Log.e(MainActivity.LOG, "Error when converting string to date");
+		}
 	}
 	
-	public String getDatetime() {
+	public Date getDatetime() {
 		return datetime;
 	}
 	
