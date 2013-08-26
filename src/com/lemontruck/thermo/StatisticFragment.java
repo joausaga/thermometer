@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -37,6 +38,7 @@ public class StatisticFragment extends Fragment {
 	private Activity activity;
 	private Context context;
 	private int filter;
+	private List<Temperature> temperatures;
 	
 	public StatisticFragment() {
 		super();
@@ -104,9 +106,53 @@ public class StatisticFragment extends Fragment {
     	/* Update MIN Temperature */
     	TextView minTemp = (TextView) view.findViewById(R.id.min_temp);
     	minTemp.setText(tempValues.get("min")+"\u00B0");
+    	populateTemperatureList(view);
     }
     
-    private List<Temperature> getStatistics(View view) {    	
+    private void populateTemperatureList(View view) {
+    	Spinner filterSp = (Spinner) view.findViewById(R.id.filter);
+    	HashMap<String,Object> tempValues = null;
+    	SimpleDateFormat dateFormat = null;
+    	ArrayList<String> listValues = new ArrayList<String>();
+    	
+    	switch(filter) {
+    		case TODAY: case SAMEDAYLASTYEAR:
+    			tempValues = aggregateTempByHours();
+    			dateFormat = new SimpleDateFormat("HH");
+    			break;
+    		case THISWEEK:
+    			tempValues = aggregateTempByDays();
+    			dateFormat = new SimpleDateFormat("E");
+    			break;
+    		case THISMONTH:
+    			tempValues = aggregateTempByWeeks();
+    			dateFormat = new SimpleDateFormat("dd");
+    			break;
+    		case THISYEAR: case THISSEMESTER:
+    			if (filter == THISYEAR) tempValues = aggregateTempByMonths(true);
+    			else tempValues = aggregateTempByMonths(false);
+    			dateFormat = new SimpleDateFormat("MM");
+    			break;
+    		default:
+    			Log.e(MainActivity.LOG, "Error!, unkown filter type");
+    			break;
+    	}
+    	
+    	HashMap<Integer, Date> dates = (HashMap<Integer, Date>) tempValues.get("hashDates");
+		ArrayList<int[]> tempByTime = (ArrayList<int[]>) tempValues.get("arrayValues");
+		Date date = null;
+		for (int i = 0; i < tempByTime.size(); i++) {
+			date = dates.get(i);
+			int avgTemp = tempByTime.get(i)[0] / tempByTime.get(i)[1]; 
+			listValues.add(dateFormat.format(date) + "\tAvg: " + avgTemp);
+		}
+		
+		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(context,
+											android.R.layout.simple_list_item_1, listValues);
+		filterSp.setAdapter(arrayAdapter); 
+    }
+    
+    private void getStatistics(View view) {    	
     	/* Get the current location (country and city) */
     	SharedPreferences settings = activity.getSharedPreferences(MainActivity.PREFS_NAME, 0);
     	String country = settings.getString("country","Italy");
@@ -114,14 +160,12 @@ public class StatisticFragment extends Fragment {
     	
     	TemperatureDataSource datasource = new TemperatureDataSource(context);
 		datasource.open();
-		List<Temperature> temperatures = datasource.getTemperatures(country, city, filter);
+		temperatures = datasource.getTemperatures(country, city, filter);
 		datasource.close();
-		
-		return temperatures;
     }
     
     private HashMap<String,String> getTemperatureValues(View view) {
-    	List<Temperature> temperatures = getStatistics(view);
+    	getStatistics(view);
     	HashMap<String,String> tempValues = new HashMap<String,String>();
     	/* Initializing the variables */
     	Integer temp = temperatures.get(0).getTemperature();
@@ -147,49 +191,65 @@ public class StatisticFragment extends Fragment {
     	return tempValues;
     }
     
-    private ArrayList<int[]> aggregateTempByHour(List<Temperature> temperatures) {
-    	ArrayList<int[]> tempByHour = new ArrayList<int[]>(24);
-    	
-    	for (int i = 0; i < temperatures.size(); i++) {
-    		Date tempDateTime = temperatures.get(i).getDatetime();
-    		Integer tempVal = temperatures.get(i).getTemperature();
-    		SimpleDateFormat dateFormat = new SimpleDateFormat("HH");
-    		Integer hour = Integer.parseInt(dateFormat.format(tempDateTime));
-    		int[] tempMeasure = tempByHour.get(hour); 
-    		if (tempMeasure == null) {
-    			tempMeasure = new int[2];
-    			tempMeasure[1] = 0;
-    		}
-    		else {
-    			tempMeasure[1] += 1;
-    		}
-    		tempMeasure[0] += tempVal;
-    		tempByHour.add(hour, tempMeasure);
-    	}
-    	
-    	return tempByHour;
+    /* To call when TODAY and THESAMEDAYLASTYEAR option is selected from the filter spinner */
+    private HashMap<String,Object> aggregateTempByHours() {
+    	String timeFormat = "HH"; /* Interested in getting the hour of the date */
+    	Integer durationPeriod = 24; /* Here the function aggregates, per hours, the temperature values of the whole day */
+    	return aggregateTempByTimePeriod(durationPeriod, timeFormat);
     }
     
-    private ArrayList<int[]> aggregateTempByDay(List<Temperature> temperatures) {
-    	ArrayList<int[]> tempByDay = new ArrayList<int[]>(7);
+    /* To call when THISWEEK option is selected from the filter spinner */
+    private HashMap<String,Object> aggregateTempByDays() {
+    	String timeFormat = "dd"; /* Interested in getting the day of the date */
+    	Integer durationPeriod = 7; /* Here the function aggregates, per days, the temperature values of the whole week */
+    	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
+    }
+    
+    /* To call when THISMONTH option is selected from the filter spinner */
+    private HashMap<String,Object> aggregateTempByWeeks() {
+    	String timeFormat = "W"; /* Interested in getting the week of the date in the month*/
+    	Integer durationPeriod = 5; /* Here the function aggregates, per weeks, the temperatures values of the whole month */
+    	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
+    }
+    
+    /* To call when THISYEAR and THISSEMESTER option is selected from the filter spinner */
+    private HashMap<String,Object> aggregateTempByMonths(Boolean isYear) {
+    	String timeFormat = "MM"; /* Interested in getting the month of the date */
+    	Integer durationPeriod = 0;
+    	if (isYear) durationPeriod = 12; /* Here the function aggregates, per months, the temperatures values of the whole year */
+    	else durationPeriod = 6; /* Here the function aggregates, per months, the temperatures values of the semester */
+    	
+    	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
+    }
+    
+    private HashMap<String,Object> aggregateTempByTimePeriod(Integer durationPeriod,
+    												   		 String timeFormat) {
+    	HashMap<String,Object> tempList = new HashMap<String,Object>();
+    	ArrayList<int[]> tempByTime = new ArrayList<int[]>();
+    	tempByTime.ensureCapacity(durationPeriod);
+    	HashMap<Integer, Date> dates = new HashMap<Integer, Date>();
+    	tempList.put("arrayValues", tempByTime);
+    	tempList.put("hashDates", dates);
     	
     	for (int i = 0; i < temperatures.size(); i++) {
     		Date tempDateTime = temperatures.get(i).getDatetime();
     		Integer tempVal = temperatures.get(i).getTemperature();
-    		SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
-    		Integer day = Integer.parseInt(dateFormat.format(tempDateTime));
-    		int[] tempMeasure = tempByDay.get(day); 
+    		SimpleDateFormat dateFormat = new SimpleDateFormat(timeFormat);
+    		Log.i(MainActivity.LOG, "DATE:" + dateFormat.format(tempDateTime));
+    		Integer time = Integer.parseInt(dateFormat.format(tempDateTime));
+    		int[] tempMeasure = tempByTime.get(time); 
     		if (tempMeasure == null) {
     			tempMeasure = new int[2];
     			tempMeasure[1] = 0;
+    			dates.put(time, tempDateTime);
     		}
     		else {
     			tempMeasure[1] += 1;
     		}
-    		tempMeasure[0] += tempVal;
-    		tempByDay.add(day, tempMeasure);
+    		tempMeasure[0] += tempVal; /* Total measures */
+    		tempByTime.add(time, tempMeasure);
     	}
     	
-    	return tempByDay;
+    	return tempList;
     }
 }

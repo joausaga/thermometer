@@ -30,9 +30,9 @@ public class Temperature {
 	}
 	
 	public void setDatetime(String datetime) {
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		try {
-			this.datetime = formatter.parse(datetime);
+			this.datetime = formatter.parse(datetime);;
 		} catch (ParseException e) {
 			Log.e(MainActivity.LOG, "Error when converting string to date");
 		}
