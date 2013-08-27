@@ -34,7 +34,7 @@ public class Temperature {
 		try {
 			this.datetime = formatter.parse(datetime);;
 		} catch (ParseException e) {
-			Log.e(MainActivity.LOG, "Error when converting string to date");
+			Log.e(MainActivity.LOG, "Error when converting string " + datetime + " to Date type");
 		}
 	}
 	
