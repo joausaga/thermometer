@@ -34,6 +34,8 @@ public class StatisticFragment extends Fragment {
 	public final static int THISSEMESTER = 5003;
 	public final static int THISYEAR = 5004;
 	public final static int SAMEDAYLASTYEAR = 5005;
+	public final static int SAMEWEEKLASTYEAR = 5006;
+	public final static int SAMEMONTHLASTYEAR = 5007;
 	
 	private Activity activity;
 	private Context context;
@@ -72,7 +74,9 @@ public class StatisticFragment extends Fragment {
             	if (pos == 2) filter = THISMONTH;
             	if (pos == 3) filter = THISSEMESTER;
             	if (pos == 4) filter = THISYEAR;
-            	if (pos == 5) filter =SAMEDAYLASTYEAR;
+            	if (pos == 5) filter = SAMEDAYLASTYEAR;
+            	if (pos == 6) filter = SAMEWEEKLASTYEAR;
+            	if (pos == 7) filter = SAMEMONTHLASTYEAR;
             	updateLayout(view);
         	}
 
@@ -160,7 +164,8 @@ public class StatisticFragment extends Fragment {
     	
     	TemperatureDataSource datasource = new TemperatureDataSource(context);
 		datasource.open();
-		temperatures = datasource.getTemperatures(country, city, filter);
+		//temperatures = datasource.getTemperatures(country, city, filter);
+		temperatures = datasource.getTemperatures(country, city, SAMEWEEKLASTYEAR);
 		datasource.close();
     }
     
@@ -226,7 +231,7 @@ public class StatisticFragment extends Fragment {
     												   		 String timeFormat) {
     	HashMap<String,Object> tempList = new HashMap<String,Object>();
     	ArrayList<int[]> tempByTime = new ArrayList<int[]>();
-    	tempByTime.ensureCapacity(durationPeriod);
+    	tempByTime = reserveSpace(tempByTime, durationPeriod);
     	HashMap<Integer, Date> dates = new HashMap<Integer, Date>();
     	tempList.put("arrayValues", tempByTime);
     	tempList.put("hashDates", dates);
@@ -235,7 +240,7 @@ public class StatisticFragment extends Fragment {
     		Date tempDateTime = temperatures.get(i).getDatetime();
     		Integer tempVal = temperatures.get(i).getTemperature();
     		SimpleDateFormat dateFormat = new SimpleDateFormat(timeFormat);
-    		Log.i(MainActivity.LOG, "DATE:" + dateFormat.format(tempDateTime));
+    		Log.i(MainActivity.LOG, "DATE:" + tempDateTime.toString());
     		Integer time = Integer.parseInt(dateFormat.format(tempDateTime));
     		int[] tempMeasure = tempByTime.get(time); 
     		if (tempMeasure == null) {
@@ -251,5 +256,12 @@ public class StatisticFragment extends Fragment {
     	}
     	
     	return tempList;
+    }
+
+    private ArrayList<int[]> reserveSpace(ArrayList<int[]> array, Integer maxElements) {
+    	for (int i = 0; i < maxElements; i++)
+    		array.add(null);
+
+    	return array;
     }
 }
