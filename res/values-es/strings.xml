@@ -52,6 +52,8 @@
 		<item>Este Semestre</item>
 		<item>Este Año</item>
 		<item>Mismo día del año pasado</item>
+		<item>Misma semana del año pasado</item>
+		<item>Mismo mes del año pasado</item>
 	</string-array>
 	<string name="label_filter">Estadísticas de</string>
 </resources>
