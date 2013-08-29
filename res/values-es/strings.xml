@@ -56,4 +56,7 @@
 		<item>Mismo mes del año pasado</item>
 	</string-array>
 	<string name="label_filter">Estadísticas de</string>
+	<string name="statistic_exception">No se pudo obtener estadísticas relacionadas al tiempo o localidad específicada</string>
+	<string name="table_title_date">Fecha</string>
+	<string name="table_title_avg_temp">Temperatura Promedio</string>
 </resources>

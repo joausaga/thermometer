@@ -72,5 +72,7 @@
 		<item>Same Month Last Year</item>
 	</string-array>
 	<string name="label_filter">Statistics of</string>
-	<string name="statistic_exception">Ops!, Meteo Thermometer could not collect yet statistics for the selected location</string>
+	<string name="statistic_exception">Could not collect statistics for the selected period of time or location</string>
+	<string name="table_title_date">Date</string>
+	<string name="table_title_avg_temp">Avg Temperature</string>
 </resources>
