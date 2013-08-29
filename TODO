@@ -1,8 +1,4 @@
 ====TODO====
-1. Populate the list of the statistics view with data about the temperature within the selected range.
-Update:
-Almost finish we still have this error
-08-27 23:20:52.588: E/AndroidRuntime(2759): java.lang.IndexOutOfBoundsException: Invalid index 0, size is 0
-08-27 23:20:52.588: E/AndroidRuntime(2759): 	at java.util.ArrayList.throwIndexOutOfBoundsException(ArrayList.java:251)
-08-27 23:20:52.588: E/AndroidRuntime(2759): 	at java.util.ArrayList.get(ArrayList.java:304)
-08-27 23:20:52.588: E/AndroidRuntime(2759): 	at com.lemontruck.thermo.StatisticFragment.getTemperatureValues(StatisticFragment.java:174)    
+1. Correct the style
+2. Check that everything is working with all the filters
+3. Move to a service all the time-consuming operations perform in statistic view
