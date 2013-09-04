@@ -1,4 +1,2 @@
 ====TODO====
-1. Correct the style
-2. Check that everything is working with all the filters
-3. Move to a service all the time-consuming operations perform in statistic view
+1. Move to a service all the time-consuming operations perform in statistic view
