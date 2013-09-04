@@ -52,8 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/filter"
             android:layout_centerHorizontal="true"
-            android:paddingLeft="40dp"
-            android:text="20\u00B0" />
+            android:paddingLeft="40dp" />
 
         <TextView
             android:id="@+id/avg_temp_desc"
@@ -84,8 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/avg_temp"
-            android:layout_toRightOf="@+id/min_temp_desc"
-            android:text="11\u00B0" />
+            android:layout_toRightOf="@+id/min_temp_desc" />
 
         <TextView
             android:id="@+id/max_temp_desc"
@@ -106,8 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/avg_temp"
-            android:layout_toRightOf="@+id/max_temp_desc"
-            android:text="25\u00B0" />
+            android:layout_toRightOf="@+id/max_temp_desc" />
 
         <!--
               <TextView
@@ -137,7 +134,6 @@
             android:layout_alignBottom="@+id/filter"
             android:layout_alignParentRight="true"
             android:paddingLeft="8dp"
-            android:text="Trento, Italy"
             android:textColor="@color/silver"
             android:textSize="13sp" />
 
