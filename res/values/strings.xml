@@ -71,8 +71,12 @@
 		<item>Same Week Last Year</item>
 		<item>Same Month Last Year</item>
 	</string-array>
-	<string name="label_filter">Statistics of</string>
+	<string name="label_filter">in</string>
 	<string name="statistic_exception">Could not collect statistics for the selected period of time or location</string>
+	<string name="table_title_day">Day</string>
+	<string name="table_title_hour">Hour</string>
 	<string name="table_title_date">Date</string>
+	<string name="table_title_month">Month</string>
 	<string name="table_title_avg_temp">Avg Temperature</string>
+	<string name="loading_statistics_message">Loading Statistics, please wait&#x2026;</string>
 </resources>
