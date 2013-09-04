@@ -55,8 +55,12 @@
 		<item>Stessa settimana del\' anno scorso</item>
 		<item>Stesso mese del\' anno scorso</item>
 	</string-array>
-	<string name="label_filter">Statistiche di</string>
+	<string name="label_filter">a</string>
 	<string name="statistic_exception">Impossibile ottenere statistiche relative al tempo o località specificata</string>
+	<string name="table_title_day">Giorno</string>
+	<string name="table_title_hour">Ora</string>
 	<string name="table_title_date">Data</string>
+	<string name="table_title_month">Mese</string>
 	<string name="table_title_avg_temp">Temperatura Media</string>
+	<string name="loading_statistics_message">Caricando Statistiche, attendere prego&#x2026;</string>
 </resources>

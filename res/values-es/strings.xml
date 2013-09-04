@@ -55,8 +55,12 @@
 		<item>Misma semana del año pasado</item>
 		<item>Mismo mes del año pasado</item>
 	</string-array>
-	<string name="label_filter">Estadísticas de</string>
+	<string name="label_filter">en</string>
 	<string name="statistic_exception">No se pudo obtener estadísticas relacionadas al tiempo o localidad específicada</string>
+	<string name="table_title_day">Día</string>
+	<string name="table_title_hour">Hora</string>
 	<string name="table_title_date">Fecha</string>
+	<string name="table_title_month">Mes</string>
 	<string name="table_title_avg_temp">Temperatura Promedio</string>
+	<string name="loading_statistics_message">Cargando Estadísticas, favor espere&#x2026;</string>
 </resources>
