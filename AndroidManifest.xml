@@ -18,6 +18,7 @@
                 android:resource="@xml/widget_info" />
         </receiver>
         <service android:name=".WeatherInfoProvider"></service>
+        <service android:name=".StatisticProvider"></service>
 
         <activity android:name="com.lemontruck.thermo.MainActivity"
          		  android:launchMode="singleTop">

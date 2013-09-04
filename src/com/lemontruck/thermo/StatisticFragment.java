@@ -9,10 +9,14 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -22,12 +26,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lemontruck.thermo.exceptions.LocationException;
 import com.lemontruck.thermo.helpers.TemperatureDataSource;
 
 public class StatisticFragment extends Fragment {
@@ -44,10 +50,11 @@ public class StatisticFragment extends Fragment {
 	public final static int SAMEMONTHLASTYEAR = 5007;
 	
 	private Activity activity;
-	private Context context;
-	private int filter;
-	private int spinnerCurrentPos;
-	private List<Temperature> temperatures;
+	private static Context context;
+	private static int filter;
+	private static int spinnerCurrentPos;
+	private static List<Temperature> temperatures;
+	private static ProgressDialog progressDialog;
 	
 	public StatisticFragment() {
 		super();
@@ -64,13 +71,16 @@ public class StatisticFragment extends Fragment {
             				 Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.statistic_fragment, container, false);
         context = activity.getApplicationContext();
+		Resources res = context.getResources();
+		
 		filter = TODAY;
 		spinnerCurrentPos = 0;
 		addListenerSpinner(view);
         setCurrentLocation(view);  /* Update Location Label */
-        HashMap<String,String> tempValues = getTemperatureValues(); /* Get Temperature Statistics */
-    	if (tempValues != null)
-    		updateLayout(view, tempValues);
+        progressDialog = new ProgressDialog(activity);
+		progressDialog.setMessage(res.getString(R.string.loading_statistics_message));
+        getStatistics(view);
+        
         return view;
     }
 
@@ -81,7 +91,6 @@ public class StatisticFragment extends Fragment {
 			public void onItemSelected(AdapterView<?> parent, View view,
 									   int pos, long id) 
         	{
-        		Resources res = context.getResources();
         		int newFilter = 0;
         		
         		if (pos == 0) newFilter = TODAY;
@@ -95,18 +104,8 @@ public class StatisticFragment extends Fragment {
             	
             	if (newFilter != filter) {
             		filter = newFilter;
-            		HashMap<String,String> tempValues = getTemperatureValues(); /* Get Temperature Statistics */
-                	if (tempValues != null) {
-                		spinnerCurrentPos = pos;
-            			ProgressDialog progressDialog = new ProgressDialog(activity);
-                		progressDialog.setMessage(res.getString(R.string.loading_statistics_message));
-                		progressDialog.show();
-                		updateLayout(staView, tempValues);
-                		progressDialog.dismiss();
-                	}
-                	else {
-                		filterSp.setSelection(spinnerCurrentPos);
-                	}
+            		progressDialog.show();
+                    getStatistics(staView);
             	}
         		
         	}
@@ -129,7 +128,7 @@ public class StatisticFragment extends Fragment {
     	location.setText(res.getString(R.string.label_filter) + " " + currentCity + ", " + currentCountry);
     }
     
-    private View updateLayout(View view, HashMap<String,String> tempValues) {
+    private static View updateLayout(View view, HashMap<String,String> tempValues) {
     	/* Update AVG Temperature */
     	TextView avgTemp = (TextView) view.findViewById(R.id.avg_temp);
     	avgTemp.setText(tempValues.get("avg")+"\u00B0");
@@ -144,7 +143,7 @@ public class StatisticFragment extends Fragment {
     	return view;
     }
     
-    private View populateTemperatureList(View view) {
+    private static View populateTemperatureList(View view) {
     	TableLayout staTable = (TableLayout) view.findViewById(R.id.statistic_table);
     	String header = "";
     	Resources res = context.getResources();
@@ -187,7 +186,7 @@ public class StatisticFragment extends Fragment {
 		staTable = setTableHeaders(staTable,header);
 		for (int i = 0; i < tempByTime.size(); i++) {
 			if (tempByTime.get(i) != null) {
-				if (tempByTime.get(i)[1] == 0) tempByTime.get(i)[1] = 1; //A ad-hoc hack to solve (temporally) bad registries in the DB  
+				if (tempByTime.get(i)[1] == 0) tempByTime.get(i)[1] = 1; //An ad-hoc hack to solve (temporally) bad records in the DB  
 				Integer avgTemp = tempByTime.get(i)[0] / tempByTime.get(i)[1];
 				Date dateTemp = dates.get(i);
 				staTable = addToStatisticTable(staTable, dateFormat.format(dateTemp), avgTemp.toString(), tail);
@@ -197,7 +196,7 @@ public class StatisticFragment extends Fragment {
 		return view;
     }
     
-    private TableLayout setTableHeaders(TableLayout table, String dateColName) {
+    private static TableLayout setTableHeaders(TableLayout table, String dateColName) {
     	Resources res = context.getResources();
     	
     	TableRow row = new TableRow(context);
@@ -221,7 +220,7 @@ public class StatisticFragment extends Fragment {
     	return table;
     }
     
-    private TableLayout addToStatisticTable(TableLayout table, String date, String avgTemp, String tail) {
+    private static TableLayout addToStatisticTable(TableLayout table, String date, String avgTemp, String tail) {
     	TableRow row = new TableRow(context);
     	TableRow.LayoutParams rowParams = new TableRow.LayoutParams(); 
     	rowParams.gravity = Gravity.LEFT;
@@ -245,84 +244,74 @@ public class StatisticFragment extends Fragment {
         return table; 
     }
     
-    private void getStatistics() {    	
-    	/* Get the current location (country and city) */
-    	SharedPreferences settings = activity.getSharedPreferences(MainActivity.PREFS_NAME, 0);
-    	String country = settings.getString("country","Italy");
-    	String city = settings.getString("location","Trento");
-    	
-    	TemperatureDataSource datasource = new TemperatureDataSource(context);
-		datasource.open();
-		temperatures = datasource.getTemperatures(country, city, filter);
-		//temperatures = datasource.getTemperatures(country, city, SAMEWEEKLASTYEAR);
-		datasource.close();
+    private void getStatistics(View view) { 
+    	// Try to retrieve the statistics
+		Intent intent = new Intent(context, StatisticProvider.class);
+	    // Create a new Messenger for the communication back
+		UpdateHandler handler = new UpdateHandler(context, view);
+	    Messenger messenger = new Messenger(handler);
+	    intent.putExtra("MESSENGER", messenger);
+	    intent.putExtra("FILTER", filter);
+	    context.startService(intent);
     }
     
-    private HashMap<String,String> getTemperatureValues() {
+    private static HashMap<String,String> getTemperatureValues() {
     	HashMap<String,String> tempValues = null;
     	
-    	getStatistics();
-    	if (!temperatures.isEmpty()) {
-	    	tempValues = new HashMap<String,String>();
-	    	/* Initializing the variables */
-	    	Integer temp = temperatures.get(0).getTemperature();
-	    	Integer avg = 0;
-	    	Integer total = temp;
-	    	Integer max = temp;
-	    	Integer min = temp;
-	    	
-	    	for (int i = 1; i < temperatures.size(); i++) {
-	    		temp = temperatures.get(i).getTemperature();
-	    		if (temp > max)
-	    			max = temp;
-	    		if (temp < min)
-	    			min = temp;
-	    		total += temp;
-	    	}
-	    	avg = total / temperatures.size();
-	    	
-	    	tempValues.put("avg", avg.toString());
-	    	tempValues.put("min", min.toString());
-	    	tempValues.put("max", max.toString());
-    	} else {
-    		Toast.makeText(context, R.string.statistic_exception, Toast.LENGTH_LONG).show();
-    	}
+    	tempValues = new HashMap<String,String>();
+    	/* Initializing the variables */
+    	Integer temp = temperatures.get(0).getTemperature();
+    	Integer avg = 0;
+    	Integer total = temp;
+    	Integer max = temp;
+    	Integer min = temp;
     	
+    	for (int i = 1; i < temperatures.size(); i++) {
+    		temp = temperatures.get(i).getTemperature();
+    		if (temp > max)
+    			max = temp;
+    		if (temp < min)
+    			min = temp;
+    		total += temp;
+    	}
+    	avg = total / temperatures.size();
+    	
+    	tempValues.put("avg", avg.toString());
+    	tempValues.put("min", min.toString());
+    	tempValues.put("max", max.toString());
+
     	return tempValues;
     }
     
     /* To call when TODAY and THESAMEDAYLASTYEAR option is selected from the filter spinner */
-    private HashMap<String,Object> aggregateTempByHours() {
+    private static HashMap<String,Object> aggregateTempByHours() {
     	String timeFormat = "HH"; /* Interested in getting the hour of the date */
     	Integer durationPeriod = 24; /* Here the function aggregates, per hours, the temperature values of the whole day */
     	return aggregateTempByTimePeriod(durationPeriod, timeFormat);
     }
     
     /* To call when THISWEEK and THESAMEWEEKLASTYEAR option is selected from the filter spinner */
-    private HashMap<String,Object> aggregateTempByDays() {
+    private static HashMap<String,Object> aggregateTempByDays() {
     	String timeFormat = "dd"; /* Interested in getting the day of the date */
-    	Integer durationPeriod = 7; /* Here the function aggregates, per days, the temperature values of the whole week */
+    	Integer durationPeriod = 31; /* Here the function aggregates, per days, the temperature values of the whole week */
     	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
     }
     
     /* To call when THISMONTH and THESAMEMONTLASTYEAR option is selected from the filter spinner */
-    private HashMap<String,Object> aggregateTempByWeeks() {
+    private static HashMap<String,Object> aggregateTempByWeeks() {
     	String timeFormat = "W"; /* Interested in getting the week of the date in the month*/
     	Integer durationPeriod = 5; /* Here the function aggregates, per weeks, the temperatures values of the whole month */
     	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
     }
     
     /* To call when THISYEAR and THISSEMESTER option is selected from the filter spinner */
-    private HashMap<String,Object> aggregateTempByMonths(Boolean isYear) {
+    private static HashMap<String,Object> aggregateTempByMonths(Boolean isYear) {
     	String timeFormat = "MM"; /* Interested in getting the month of the date */
-    	Integer durationPeriod = 0;
-    	if (isYear) durationPeriod = 12; /* Here the function aggregates, per months, the temperatures values of the whole year */
-    	else durationPeriod = 6; /* Here the function aggregates, per months, the temperatures values of the semester */
-    	
+    	Integer durationPeriod = 12;
     	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
     }
     
-    private HashMap<String,Object> aggregateTempByTimePeriod(Integer durationPeriod,
+    private static HashMap<String,Object> aggregateTempByTimePeriod(Integer durationPeriod,
     												   		 String timeFormat) {
     	HashMap<String,Object> tempList = new HashMap<String,Object>();
     	ArrayList<int[]> tempByTime = new ArrayList<int[]>();
@@ -331,6 +320,7 @@ public class StatisticFragment extends Fragment {
     	tempList.put("arrayValues", tempByTime);
     	tempList.put("hashDates", dates);
     	
+    	Log.i(MainActivity.LOG, "Temperature size: " + temperatures.size());
     	for (int i = 0; i < temperatures.size(); i++) {
     		Date tempDateTime = temperatures.get(i).getDatetime();
     		Integer tempVal = temperatures.get(i).getTemperature();
@@ -338,7 +328,6 @@ public class StatisticFragment extends Fragment {
     		Integer time = Integer.parseInt(dateFormat.format(tempDateTime));
     		int[] tempMeasure = tempByTime.get(time-1); 
     		if (tempMeasure == null) {
-    			Log.i(MainActivity.LOG, "New time");
     			tempMeasure = new int[2];
     			tempMeasure[1] = 1;
     			dates.put(time-1, tempDateTime);
@@ -353,10 +342,42 @@ public class StatisticFragment extends Fragment {
     	return tempList;
     }
 
-    private ArrayList<int[]> reserveSpace(ArrayList<int[]> array, Integer maxElements) {
+    private static ArrayList<int[]> reserveSpace(ArrayList<int[]> array, Integer maxElements) {
     	for (int i = 0; i < maxElements; i++)
     		array.add(null);
 
     	return array;
     }
+    
+    private static class UpdateHandler extends Handler {
+		private Context context;
+		private View view;
+	
+		public UpdateHandler(Context context, View view) {
+			this.context = context;
+			this.view = view;
+		}
+		
+		public void handleMessage(Message message) {
+			if (message.arg1 == Activity.RESULT_OK) {
+				temperatures = (List<Temperature>) message.obj;
+				Spinner filterSp = (Spinner) view.findViewById(R.id.filter);
+				if (!temperatures.isEmpty()) {
+					HashMap<String,String> tempValues = getTemperatureValues(); /* Get Temperature Statistics */
+					updateLayout(view, tempValues);
+					spinnerCurrentPos = filterSp.getSelectedItemPosition();
+            		progressDialog.dismiss();
+				}
+				else {
+					progressDialog.dismiss();
+					filterSp.setSelection(spinnerCurrentPos);
+					Toast.makeText(context, R.string.statistic_exception, Toast.LENGTH_LONG).show();
+				}
+			} 
+			else {
+				Exception e = (Exception) message.obj;
+				Log.e(MainActivity.LOG, "Could get statistics, cause: " + e.getMessage());
+			}
+		}
+	}
 }
