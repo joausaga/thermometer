@@ -45,7 +45,8 @@
 	    android:layout_height="wrap_content"
 	    android:gravity="center"
 	   	android:layout_gravity="center"
-	    android:visibility="gone" >
+	    android:visibility="gone"
+	    android:layout_weight="3" >
 	     
 	    <ProgressBar
 	        android:id="@+id/updating_widget"
@@ -57,7 +58,7 @@
 	    
 		<TextView
 		    android:id="@+id/message"
-		    style="@style/Text.Medium"
+		    style="@style/Text.Small"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:layout_below="@id/updating_widget"
@@ -68,7 +69,7 @@
 	    android:id="@+id/temp_info_container_right"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_weight="2"
+	    android:layout_weight="3"
 	    android:orientation="vertical"
 	    android:weightSum="5"
 	    android:paddingBottom="5dp" >
@@ -119,7 +120,8 @@
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical"
 	    android:paddingRight="8dp"
-	    android:clickable="true" >
+	    android:clickable="true"
+	    android:layout_weight="1" >
 	    
 	    <ImageView
 	        android:id="@+id/refresh_icon"
