@@ -128,7 +128,8 @@ public class StatisticFragment extends Fragment {
     	location.setText(res.getString(R.string.label_filter) + " " + currentCity + ", " + currentCountry);
     }
     
-    private static View updateLayout(View view, HashMap<String,String> tempValues) {
+    private static View updateLayout(View view, HashMap<String,String> tempValues,
+    								 HashMap<String,Object> tempAggregated) {
     	/* Update AVG Temperature */
     	TextView avgTemp = (TextView) view.findViewById(R.id.avg_temp);
     	avgTemp.setText(tempValues.get("avg")+"\u00B0");
@@ -138,40 +139,34 @@ public class StatisticFragment extends Fragment {
     	/* Update MIN Temperature */
     	TextView minTemp = (TextView) view.findViewById(R.id.min_temp);
     	minTemp.setText(tempValues.get("min")+"\u00B0");
-    	view = populateTemperatureList(view);
+    	view = populateTemperatureList(view,tempAggregated);
     	
     	return view;
     }
     
-    private static View populateTemperatureList(View view) {
+    private static View populateTemperatureList(View view, HashMap<String,Object> tempValues) {
     	TableLayout staTable = (TableLayout) view.findViewById(R.id.statistic_table);
     	String header = "";
     	Resources res = context.getResources();
     	String tail = "";
     	
-    	HashMap<String,Object> tempValues = null;
     	SimpleDateFormat dateFormat = null;
     	
     	switch(filter) {
     		case TODAY: case SAMEDAYLASTYEAR:
-    			tempValues = aggregateTempByHours();
     			dateFormat = new SimpleDateFormat("HH");
     			header = res.getString(R.string.table_title_hour);
     			tail = ":00";
     			break;
     		case THISWEEK: case SAMEWEEKLASTYEAR:
-    			tempValues = aggregateTempByDays();
     			dateFormat = new SimpleDateFormat("EEEE");
     			header = res.getString(R.string.table_title_day);
     			break;
     		case THISMONTH: case SAMEMONTHLASTYEAR:
-    			tempValues = aggregateTempByWeeks();
     			dateFormat = new SimpleDateFormat("dd");
     			header = res.getString(R.string.table_title_date);
     			break;
     		case THISYEAR: case THISSEMESTER:
-    			if (filter == THISYEAR) tempValues = aggregateTempByMonths(true);
-    			else tempValues = aggregateTempByMonths(false);
     			dateFormat = new SimpleDateFormat("MMMM");
     			header = res.getString(R.string.table_title_month);
     			break;
@@ -283,72 +278,6 @@ public class StatisticFragment extends Fragment {
     	return tempValues;
     }
     
-    /* To call when TODAY and THESAMEDAYLASTYEAR option is selected from the filter spinner */
-    private static HashMap<String,Object> aggregateTempByHours() {
-    	String timeFormat = "HH"; /* Interested in getting the hour of the date */
-    	Integer durationPeriod = 24; /* Here the function aggregates, per hours, the temperature values of the whole day */
-    	return aggregateTempByTimePeriod(durationPeriod, timeFormat);
-    }
-    
-    /* To call when THISWEEK and THESAMEWEEKLASTYEAR option is selected from the filter spinner */
-    private static HashMap<String,Object> aggregateTempByDays() {
-    	String timeFormat = "dd"; /* Interested in getting the day of the date */
-    	Integer durationPeriod = 31; /* Here the function aggregates, per days, the temperature values of the whole week */
-    	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
-    }
-    
-    /* To call when THISMONTH and THESAMEMONTLASTYEAR option is selected from the filter spinner */
-    private static HashMap<String,Object> aggregateTempByWeeks() {
-    	String timeFormat = "W"; /* Interested in getting the week of the date in the month*/
-    	Integer durationPeriod = 5; /* Here the function aggregates, per weeks, the temperatures values of the whole month */
-    	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
-    }
-    
-    /* To call when THISYEAR and THISSEMESTER option is selected from the filter spinner */
-    private static HashMap<String,Object> aggregateTempByMonths(Boolean isYear) {
-    	String timeFormat = "MM"; /* Interested in getting the month of the date */
-    	Integer durationPeriod = 12;
-    	return aggregateTempByTimePeriod(durationPeriod, timeFormat); 
-    }
-    
-    private static HashMap<String,Object> aggregateTempByTimePeriod(Integer durationPeriod,
-    												   		 String timeFormat) {
-    	HashMap<String,Object> tempList = new HashMap<String,Object>();
-    	ArrayList<int[]> tempByTime = new ArrayList<int[]>();
-    	tempByTime = reserveSpace(tempByTime, durationPeriod);
-    	HashMap<Integer, Date> dates = new HashMap<Integer, Date>();
-    	tempList.put("arrayValues", tempByTime);
-    	tempList.put("hashDates", dates);
-    	
-    	Log.i(MainActivity.LOG, "Temperature size: " + temperatures.size());
-    	for (int i = 0; i < temperatures.size(); i++) {
-    		Date tempDateTime = temperatures.get(i).getDatetime();
-    		Integer tempVal = temperatures.get(i).getTemperature();
-    		SimpleDateFormat dateFormat = new SimpleDateFormat(timeFormat);
-    		Integer time = Integer.parseInt(dateFormat.format(tempDateTime));
-    		int[] tempMeasure = tempByTime.get(time-1); 
-    		if (tempMeasure == null) {
-    			tempMeasure = new int[2];
-    			tempMeasure[1] = 1;
-    			dates.put(time-1, tempDateTime);
-    		}
-    		else {
-    			tempMeasure[1] += 1;
-    		}
-    		tempMeasure[0] += tempVal; /* Total measures */
-    		tempByTime.set(time-1, tempMeasure);
-    	}
-		
-    	return tempList;
-    }
-
-    private static ArrayList<int[]> reserveSpace(ArrayList<int[]> array, Integer maxElements) {
-    	for (int i = 0; i < maxElements; i++)
-    		array.add(null);
-
-    	return array;
-    }
-    
     private static class UpdateHandler extends Handler {
 		private Context context;
 		private View view;
@@ -360,11 +289,15 @@ public class StatisticFragment extends Fragment {
 		
 		public void handleMessage(Message message) {
 			if (message.arg1 == Activity.RESULT_OK) {
-				temperatures = (List<Temperature>) message.obj;
+				ArrayList<Object> ret = new ArrayList<Object>();
+				ret = (ArrayList<Object>)message.obj;
+				
+				temperatures = (List<Temperature>) ret.get(0);
 				Spinner filterSp = (Spinner) view.findViewById(R.id.filter);
 				if (!temperatures.isEmpty()) {
+					HashMap<String,Object> tempAggregated = (HashMap<String,Object>) ret.get(1); 
 					HashMap<String,String> tempValues = getTemperatureValues(); /* Get Temperature Statistics */
-					updateLayout(view, tempValues);
+					updateLayout(view, tempValues, tempAggregated);
 					spinnerCurrentPos = filterSp.getSelectedItemPosition();
             		progressDialog.dismiss();
 				}
