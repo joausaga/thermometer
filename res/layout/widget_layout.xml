@@ -1,144 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@+id/widget"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-	android:paddingLeft="12dp"
-    android:paddingRight="8dp"
-    android:paddingTop="5dp"
-	style="@style/WidgetBackground"
-	android:orientation="horizontal"
-	android:weightSum="6">
+	style="@style/WidgetBackground" >
+	
+    <ImageView
+        android:id="@+id/temp_icon"
+        android:layout_width="25sp"
+        android:layout_height="48sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:paddingLeft="5dp"
+        android:src="@drawable/orange"
+        android:visibility="gone" />
 
-	<LinearLayout
-	    android:id="@+id/temp_info_container_left"
+    <TextView
+        android:id="@+id/temp_desc"
+        style="@style/Text.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/temp_icon"
+        android:paddingLeft="5dp"
+        android:text="Warm"
+        android:visibility="gone" />
+
+	<TextView
+	    android:id="@+id/message"
+	    style="@style/Text.Small"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_weight="2"
-	    android:paddingTop="8dp"
-	    android:orientation="vertical"
-	    android:weightSum="5" >
-	    
-	    <ImageView
-	        android:id="@+id/temp_icon"
-	        android:layout_width="40sp"
-	        android:layout_height="48sp"
-	        android:layout_gravity="center"
-	        android:layout_weight="4"
-	        android:src="@drawable/orange" />
-	    
-	     <TextView
-	  	    android:id="@+id/temp_desc"
-	  	    style="@style/Text.Small"
-	  	    android:layout_width="wrap_content"
-	  	    android:layout_height="wrap_content"
-	  	    android:layout_weight="1"
-	  	    android:layout_gravity="bottom|center"
-	  	    android:gravity="bottom"
-	  	    android:text="Warm" />
-	</LinearLayout>
-
-	<RelativeLayout
-	    android:id="@+id/messenger"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
+	    android:layout_marginLeft="5dp"
+	    android:layout_toLeftOf="@+id/refresh_icon"
 	    android:gravity="center"
-	   	android:layout_gravity="center"
-	    android:visibility="gone"
-	    android:layout_weight="3" >
-	     
-	    <ProgressBar
-	        android:id="@+id/updating_widget"
-	        style="@android:style/Widget.ProgressBar.Small"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:paddingBottom="5dp"
-	        android:visibility="gone" />
-	    
-		<TextView
-		    android:id="@+id/message"
-		    style="@style/Text.Small"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_below="@id/updating_widget"
-		    android:gravity="center" />
-	</RelativeLayout>
-    
-	<LinearLayout
-	    android:id="@+id/temp_info_container_right"
+	    android:layout_marginTop="15dp"
+	    android:layout_marginRight="20dp"
+	    android:text="Error when updating, try again" />
+
+	<ProgressBar
+	    android:id="@+id/updating_widget"
+	    style="@android:style/Widget.ProgressBar.Small"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_weight="3"
-	    android:orientation="vertical"
-	    android:weightSum="5"
-	    android:paddingBottom="5dp" >
-	    
-	    <ProgressBar
-	        android:id="@+id/updating_temp"
-	        style="@android:style/Widget.ProgressBar.Small"
-	        android:layout_width="wrap_content"
-	        android:layout_height="45sp"
-	        android:layout_weight="2"
-	        android:paddingTop="10dp"
-	        android:layout_gravity="center"
-	        android:visibility="gone" />
-	    
-	    <TextView
-	        android:id="@+id/temp_info"
-	        style="@style/Text.High"
-	        android:layout_width="wrap_content"
-	        android:layout_height="45sp"
-	        android:layout_gravity="center"
-	        android:layout_weight="2"
-	        android:text="25\u00B0"/>
-		
-	    <TextView
-		    android:id="@+id/location"
-		    style="@style/Text.Medium"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_weight="2"
-		    android:layout_gravity="center"
-		    android:gravity="center"
-		    android:text="Trento" />
-	    
-	    <TextView
-	  	    android:id="@+id/country"
-	  	    style="@style/Text.Small"
-	  	    android:layout_width="wrap_content"
-	  	    android:layout_height="wrap_content"
-	  	    android:layout_weight="1"
-	  	    android:layout_gravity="center"
-	  	    android:gravity="center"
-	  	    android:text="Italy" />
-	</LinearLayout>
+	    android:layout_above="@+id/message"
+	    android:layout_alignLeft="@+id/message"
+	    android:layout_marginLeft="43dp"
+	    android:paddingBottom="5dp"
+	    android:visibility="gone" />
 
-	<RelativeLayout
-	    android:id="@+id/options_container"
+	<ProgressBar
+	    android:id="@+id/updating_temp"
+	    style="@android:style/Widget.ProgressBar.Small"
 	    android:layout_width="wrap_content"
-	    android:layout_height="fill_parent"
-	    android:orientation="vertical"
-	    android:paddingRight="8dp"
-	    android:clickable="true"
-	    android:layout_weight="1" >
-	    
-	    <ImageView
-	        android:id="@+id/refresh_icon"
-	        android:layout_width="15dp"
-	        android:layout_height="15dp"
-	        android:layout_above="@+id/last_update"
-	        android:paddingBottom="3dp"
-	        android:src="@drawable/refresh" />
-	    
-	    <TextView
-	        android:id="@+id/last_update"
-	        style="@style/Text.Tiny"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentBottom="true"
-	        android:paddingBottom="5dp"
-	        android:text="10:80" />
+	    android:layout_height="45sp"
+	    android:layout_above="@+id/location"
+	    android:layout_toRightOf="@+id/temp_icon"
+	    android:paddingLeft="0dp"
+	    android:paddingTop="10dp"
+	    android:visibility="gone" />
 
-	</RelativeLayout>
-</LinearLayout>
+	<TextView
+	    android:id="@+id/temp_info"
+	    style="@style/Text.High"
+	    android:layout_width="wrap_content"
+	    android:layout_height="45sp"
+	    android:layout_above="@+id/location"
+	    android:layout_gravity="center"
+	    android:layout_toRightOf="@id/temp_icon"
+	    android:paddingLeft="12dp"
+	    android:text="25\u00B0"
+	    android:visibility="gone" />
+	
+    <ImageView
+        android:id="@+id/refresh_icon"
+        android:layout_width="15dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/temp_icon"
+        android:paddingBottom="3dp"
+        android:paddingTop="30dp"
+        android:paddingRight="10dp"
+        android:src="@drawable/refresh" />
+
+    <TextView
+        android:id="@+id/last_update"
+        style="@style/Text.Tiny"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignRight="@+id/refresh_icon"
+        android:layout_alignBaseline="@+id/temp_desc"
+        android:paddingBottom="5dp"
+        android:paddingRight="10dp"
+        android:text="10:80" />
+
+    <TextView
+        android:id="@+id/country"
+        style="@style/Text.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/temp_desc"
+        android:layout_below="@+id/location"
+        android:layout_toRightOf="@+id/temp_desc"
+        android:paddingLeft="25dp"
+        android:text="Italy"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/location"
+        style="@style/Text.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/temp_icon"
+        android:layout_marginLeft="18dp"
+        android:layout_toRightOf="@+id/temp_desc"
+        android:gravity="center"
+        android:text="Trento"
+        android:visibility="gone" />
+	
+</RelativeLayout>

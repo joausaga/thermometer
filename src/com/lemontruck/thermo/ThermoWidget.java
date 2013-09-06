@@ -138,26 +138,42 @@ public class ThermoWidget extends AppWidgetProvider
 	}
 	
 	public static RemoteViews cleanWidget(RemoteViews views) {
-		views.setViewVisibility(R.id.temp_info_container_left, View.GONE);
-		views.setViewVisibility(R.id.temp_info_container_right, View.GONE);
-		views.setViewVisibility(R.id.options_container, View.GONE);
-		views.setViewVisibility(R.id.messenger, View.GONE);
-		views.setViewVisibility(R.id.updating_temp, View.GONE);
+		views.setViewVisibility(R.id.temp_icon, View.GONE);
+		views.setViewVisibility(R.id.temp_desc, View.GONE);
+		views.setViewVisibility(R.id.message, View.GONE);
 		views.setViewVisibility(R.id.updating_widget, View.GONE);
+		views.setViewVisibility(R.id.updating_temp, View.GONE);
+		views.setViewVisibility(R.id.temp_info, View.GONE);
+		views.setViewVisibility(R.id.refresh_icon, View.GONE);
+		views.setViewVisibility(R.id.last_update, View.GONE);
+		views.setViewVisibility(R.id.country, View.GONE);
+		views.setViewVisibility(R.id.location, View.GONE);
 		return views;
 	}
 	
 	public static RemoteViews turnOnTempInfoContainers(RemoteViews views) {
-		views.setViewVisibility(R.id.temp_info_container_left, View.VISIBLE);
-		views.setViewVisibility(R.id.temp_info_container_right, View.VISIBLE);
-		views.setViewVisibility(R.id.options_container, View.VISIBLE);
+		views.setViewVisibility(R.id.temp_icon, View.VISIBLE);
+		views.setViewVisibility(R.id.temp_desc, View.VISIBLE);
+		views.setViewVisibility(R.id.temp_info, View.VISIBLE);
+		views.setViewVisibility(R.id.refresh_icon, View.VISIBLE);
+		views.setViewVisibility(R.id.last_update, View.VISIBLE);
+		views.setViewVisibility(R.id.country, View.VISIBLE);
+		views.setViewVisibility(R.id.location, View.VISIBLE);
+		views.setViewVisibility(R.id.message, View.GONE);
+		views.setViewVisibility(R.id.updating_widget, View.GONE);
 		return views;
 	}
 	
 	public static RemoteViews turnOnMessageContainer(RemoteViews views) {
-		views.setViewVisibility(R.id.temp_info_container_left, View.INVISIBLE);
-		views.setViewVisibility(R.id.temp_info_container_right, View.INVISIBLE);
-		views.setViewVisibility(R.id.messenger, View.VISIBLE);
+		views.setViewVisibility(R.id.temp_icon, View.INVISIBLE);
+		views.setViewVisibility(R.id.temp_desc, View.INVISIBLE);
+		views.setViewVisibility(R.id.temp_info, View.GONE);
+		views.setViewVisibility(R.id.country, View.GONE);
+		views.setViewVisibility(R.id.location, View.GONE);
+		views.setViewVisibility(R.id.message, View.VISIBLE);
+		views.setViewVisibility(R.id.updating_widget, View.VISIBLE);
+		views.setViewVisibility(R.id.refresh_icon, View.VISIBLE);
+		views.setViewVisibility(R.id.last_update, View.VISIBLE);
 		return views;
 	}
 	
@@ -266,7 +282,7 @@ public class ThermoWidget extends AppWidgetProvider
 	    intent.putExtra(ThermoWidget.WIDGET_ID_KEY, ids);
 	    pendingIntent = PendingIntent.getBroadcast(context, 0, 
         										 intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		views.setOnClickPendingIntent(R.id.options_container, pendingIntent);
+		views.setOnClickPendingIntent(R.id.refresh_icon, pendingIntent);
 	}
 	
 	private static class UpdateHandler extends Handler {
