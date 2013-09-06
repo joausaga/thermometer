@@ -54,16 +54,8 @@ public class ThermoWidget extends AppWidgetProvider
 		Resources res = context.getResources();
 		views.setTextViewText(R.id.message, res.getString(R.string.loading));
 		doUpdate(context,views);
-		//context.startService(new Intent(context, UpdateService.class));
 		getWeatherInfo(context, views);
 	}
-	
-	/*@Override
-	public void onEnabled(Context context) {
-		RemoteViews updateViews = new RemoteViews(context.getPackageName(), 
-												  R.layout.widget_layout);
-		startOverWidget(context,updateViews);
-	}*/
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -148,6 +140,7 @@ public class ThermoWidget extends AppWidgetProvider
 	public static RemoteViews cleanWidget(RemoteViews views) {
 		views.setViewVisibility(R.id.temp_info_container_left, View.GONE);
 		views.setViewVisibility(R.id.temp_info_container_right, View.GONE);
+		views.setViewVisibility(R.id.options_container, View.GONE);
 		views.setViewVisibility(R.id.messenger, View.GONE);
 		views.setViewVisibility(R.id.updating_temp, View.GONE);
 		views.setViewVisibility(R.id.updating_widget, View.GONE);
@@ -157,20 +150,14 @@ public class ThermoWidget extends AppWidgetProvider
 	public static RemoteViews turnOnTempInfoContainers(RemoteViews views) {
 		views.setViewVisibility(R.id.temp_info_container_left, View.VISIBLE);
 		views.setViewVisibility(R.id.temp_info_container_right, View.VISIBLE);
+		views.setViewVisibility(R.id.options_container, View.VISIBLE);
 		return views;
 	}
 	
 	public static RemoteViews turnOnMessageContainer(RemoteViews views) {
+		views.setViewVisibility(R.id.temp_info_container_left, View.INVISIBLE);
+		views.setViewVisibility(R.id.temp_info_container_right, View.INVISIBLE);
 		views.setViewVisibility(R.id.messenger, View.VISIBLE);
-		return views;
-	}
-	
-	public static RemoteViews updateViewsVisibility(RemoteViews views, Integer visibility) {
-		views.setViewVisibility(R.id.temp_icon, visibility);
-		views.setViewVisibility(R.id.temp_desc, visibility);
-		views.setViewVisibility(R.id.temp_info, visibility);
-		views.setViewVisibility(R.id.country, visibility);
-		views.setViewVisibility(R.id.location, visibility);
 		return views;
 	}
 	
