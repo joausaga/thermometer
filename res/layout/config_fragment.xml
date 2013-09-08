@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:padding="10dip"
             android:text="@string/behavior_message"
-            android:textAppearance="@style/Text.Medium" 
+            android:textAppearance="@style/Text.Small" 
             android:gravity="center"/>
        	
         <View
@@ -88,7 +88,7 @@
 	   	    android:layout_width="fill_parent"
 	   	    android:layout_height="wrap_content"
 	   	    android:padding="10dip"
-	   	    android:textAppearance="@style/Text.Medium"
+	   	    android:textAppearance="@style/Text.Small"
 	   	    android:gravity="center"
 	   	    android:clickable="true" />
          
