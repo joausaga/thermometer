@@ -21,6 +21,9 @@ import android.app.FragmentTransaction;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -116,9 +119,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                super.onOptionsItemSelected(item);
                 closeActivity();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
