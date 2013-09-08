@@ -63,4 +63,5 @@
 	<string name="table_title_month">Mese</string>
 	<string name="table_title_avg_temp">Temperatura Media</string>
 	<string name="loading_statistics_message">Caricando Statistiche, attendere prego&#x2026;</string>
+	<string name="source_label">Sorgente</string>
 </resources>

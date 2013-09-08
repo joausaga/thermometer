@@ -36,7 +36,7 @@
 	</string-array>
 	<string name="loading">Cargando&#x2026;</string>
 	<string name="behavior_message">(El widget se actualizará cada 30 minutos)</string>
-	<string name="error">Error al intentar obtener la information</string>
+	<string name="error">Error al actualizar el widget</string>
 	<string name="last_updated">Última actualización</string>
 	<string name="label_cancel_button">Cancelar</string>
 	<string name="label_save_button">Guardar</string>
@@ -63,4 +63,5 @@
 	<string name="table_title_month">Mes</string>
 	<string name="table_title_avg_temp">Temperatura Promedio</string>
 	<string name="loading_statistics_message">Cargando Estadísticas, favor espere&#x2026;</string>
+	<string name="source_label">Fuente</string>
 </resources>

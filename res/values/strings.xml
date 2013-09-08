@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Meteo Thermometer</string>
     <string name="action_settings">Settings</string>
-    <string name="no_network_message">No network connection, try again</string>
+    <string name="no_network_message">No network connection</string>
     <string name="dialog_title">What do you want to do?</string>
     <string-array name="dialog_options">
     	<item>Update Temperature</item>
@@ -52,7 +52,7 @@
 	<string name="poweredby_py" formatted="false">www.meteorologia.gov.py</string>
 	<string name="loading">Loading&#x2026;</string>
 	<string name="behavior_message">(The widget will be updated every 30 minutes)</string>
-	<string name="error">Error when updating, try again</string>
+	<string name="error">Error while updating the widget</string>
 	<string name="last_updated">Last Updated</string>
 	<string name="label_cancel_button">Cancel</string>
 	<string name="label_save_button">Save</string>
@@ -79,4 +79,5 @@
 	<string name="table_title_month">Month</string>
 	<string name="table_title_avg_temp">Avg Temperature</string>
 	<string name="loading_statistics_message">Loading Statistics, please wait&#x2026;</string>
+	<string name="source_label">Source</string>
 </resources>
