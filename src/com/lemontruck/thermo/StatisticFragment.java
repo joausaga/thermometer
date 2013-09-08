@@ -25,16 +25,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.lemontruck.thermo.exceptions.LocationException;
-import com.lemontruck.thermo.helpers.TemperatureDataSource;
 
 public class StatisticFragment extends Fragment {
 	public static final String ARG_SECTION_NUMBER = "section_number";
@@ -71,19 +66,23 @@ public class StatisticFragment extends Fragment {
             				 Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.statistic_fragment, container, false);
         context = activity.getApplicationContext();
-		Resources res = context.getResources();
 		
 		filter = TODAY;
 		spinnerCurrentPos = 0;
 		addListenerSpinner(view);
         setCurrentLocation(view);  /* Update Location Label */
-        progressDialog = new ProgressDialog(activity);
+
+		Resources res = context.getResources();
+    	progressDialog = new ProgressDialog(activity);
 		progressDialog.setMessage(res.getString(R.string.loading_statistics_message));
-        getStatistics(view);
+		
+		SharedPreferences settings = activity.getSharedPreferences(MainActivity.PREFS_NAME, 0);
+		if (!settings.getBoolean("first_time", true))
+			getStatistics(view);
         
         return view;
     }
-
+    
     private void addListenerSpinner(final View staView) {
     	final Spinner filterSp = (Spinner) staView.findViewById(R.id.filter);
     	filterSp.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -290,11 +289,11 @@ public class StatisticFragment extends Fragment {
 		public void handleMessage(Message message) {
 			if (message.arg1 == Activity.RESULT_OK) {
 				ArrayList<Object> ret = new ArrayList<Object>();
-				ret = (ArrayList<Object>)message.obj;
+				ret = (ArrayList<Object>) message.obj;
 				
-				temperatures = (List<Temperature>) ret.get(0);
 				Spinner filterSp = (Spinner) view.findViewById(R.id.filter);
-				if (!temperatures.isEmpty()) {
+				if (!ret.isEmpty()) {
+					temperatures = (List<Temperature>) ret.get(0);
 					HashMap<String,Object> tempAggregated = (HashMap<String,Object>) ret.get(1); 
 					HashMap<String,String> tempValues = getTemperatureValues(); /* Get Temperature Statistics */
 					updateLayout(view, tempValues, tempAggregated);
@@ -308,6 +307,8 @@ public class StatisticFragment extends Fragment {
 				}
 			} 
 			else {
+				progressDialog.dismiss();
+				Toast.makeText(context, R.string.statistic_exception, Toast.LENGTH_LONG).show();
 				Exception e = (Exception) message.obj;
 				Log.e(MainActivity.LOG, "Could get statistics, cause: " + e.getMessage());
 			}
