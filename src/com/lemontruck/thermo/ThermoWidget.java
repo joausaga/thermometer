@@ -21,6 +21,8 @@ import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
+
 import com.lemontruck.thermo.exceptions.LocationException;;
 
 public class ThermoWidget extends AppWidgetProvider
@@ -28,22 +30,21 @@ public class ThermoWidget extends AppWidgetProvider
 	private final static String LOG = "com.lemontruck.thermo";
 	public static final String WIDGET_ID_KEY ="thermowidgetid";
 	private static final String PREFS_NAME = "com.lemontruck.thermo.ThermoWidget";
-	private static boolean networkAvailable = true;
 	
 	public static void remakeWidget(Context context,
 									AppWidgetManager appWidgetManager,
 									int appWidgetId) 
 	{
-		RemoteViews updateViews = new RemoteViews(context.getPackageName(), 
+		RemoteViews views = new RemoteViews(context.getPackageName(), 
 												  R.layout.widget_layout);
-		updateViews = cleanWidget(updateViews);
+		views = cleanWidget(views);
 		if (existNetworkConnection(context)) {
-			startOverWidget(context,updateViews);
-			networkAvailable = true;
+			startOverWidget(context,views);
 		}
 		else {
-			networkAvailable = false;
-			turnOffWidget(context,updateViews,"");
+			Resources res = context.getResources();
+			String errorMsg = res.getString(R.string.no_network_message);
+			turnOffWidget(context,views, errorMsg);
 		}
 	}
 	
@@ -72,23 +73,18 @@ public class ThermoWidget extends AppWidgetProvider
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 						 int[] appWidgetIds) 
 	{
-		RemoteViews updateViews = new RemoteViews(context.getPackageName(), 
-												  R.layout.widget_layout);
-		updateViews = cleanWidget(updateViews);
+		RemoteViews views = new RemoteViews(context.getPackageName(), 
+										    R.layout.widget_layout);
 		Log.i(LOG, "On onUpdate method...");
 		if (existNetworkConnection(context)) {
-			if (networkAvailable) {
-				updateTemperature(context, updateViews);
-				networkAvailable = true;
-			}
-			else {
-				startOverWidget(context,updateViews);
-				networkAvailable = true;
-			}
+			updateTemperature(context, views);
 		}
 		else {
-			networkAvailable = false;
-			turnOffWidget(context, updateViews, "");
+			Resources res = context.getResources();
+			String errorMsg = res.getString(R.string.no_network_message);
+			turnOffWidget(context,views, errorMsg);
+			if (appWidgetIds.length > 0)
+				Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
 		}
 	}
 	
@@ -126,39 +122,36 @@ public class ThermoWidget extends AppWidgetProvider
 		return views;
 	}
 	
-	private static void turnOffWidget(Context context, RemoteViews updateViews, 
-									  String message) {
-		updateViews = turnOnMessageContainer(updateViews);
-		Resources res = context.getResources();
-		if (message.equals(""))
-			message = res.getString(R.string.no_network_message);
-		updateViews.setTextViewText(R.id.message, message);
-		bindActionOnClick(context, updateViews);
-		doUpdate(context,updateViews);
+	private static void turnOffWidget(Context context, RemoteViews views, 
+									  String errorMsg) {
+		views = turnOnMessageContainer(views);
+		views.setTextViewText(R.id.message, errorMsg);
+		views.setTextViewText(R.id.last_update, "--:--");
+		bindActionOnClick(context, views);
+		doUpdate(context,views);
 	}
 	
 	public static RemoteViews cleanWidget(RemoteViews views) {
 		views.setViewVisibility(R.id.temp_icon, View.GONE);
+		views.setViewVisibility(R.id.temp_info, View.GONE);
 		views.setViewVisibility(R.id.temp_desc, View.GONE);
+		views.setViewVisibility(R.id.location, View.GONE);
+		views.setViewVisibility(R.id.country, View.GONE);
 		views.setViewVisibility(R.id.message, View.GONE);
 		views.setViewVisibility(R.id.updating_widget, View.GONE);
-		views.setViewVisibility(R.id.updating_temp, View.GONE);
-		views.setViewVisibility(R.id.temp_info, View.GONE);
 		views.setViewVisibility(R.id.refresh_icon, View.GONE);
 		views.setViewVisibility(R.id.last_update, View.GONE);
-		views.setViewVisibility(R.id.country, View.GONE);
-		views.setViewVisibility(R.id.location, View.GONE);
 		return views;
 	}
 	
 	public static RemoteViews turnOnTempInfoContainers(RemoteViews views) {
 		views.setViewVisibility(R.id.temp_icon, View.VISIBLE);
-		views.setViewVisibility(R.id.temp_desc, View.VISIBLE);
 		views.setViewVisibility(R.id.temp_info, View.VISIBLE);
+		views.setViewVisibility(R.id.temp_desc, View.VISIBLE);
+		views.setViewVisibility(R.id.location, View.VISIBLE);
+		views.setViewVisibility(R.id.country, View.VISIBLE);
 		views.setViewVisibility(R.id.refresh_icon, View.VISIBLE);
 		views.setViewVisibility(R.id.last_update, View.VISIBLE);
-		views.setViewVisibility(R.id.country, View.VISIBLE);
-		views.setViewVisibility(R.id.location, View.VISIBLE);
 		views.setViewVisibility(R.id.message, View.GONE);
 		views.setViewVisibility(R.id.updating_widget, View.GONE);
 		return views;
@@ -166,14 +159,14 @@ public class ThermoWidget extends AppWidgetProvider
 	
 	public static RemoteViews turnOnMessageContainer(RemoteViews views) {
 		views.setViewVisibility(R.id.temp_icon, View.INVISIBLE);
+		views.setViewVisibility(R.id.temp_info, View.INVISIBLE);
 		views.setViewVisibility(R.id.temp_desc, View.INVISIBLE);
-		views.setViewVisibility(R.id.temp_info, View.GONE);
-		views.setViewVisibility(R.id.country, View.GONE);
-		views.setViewVisibility(R.id.location, View.GONE);
-		views.setViewVisibility(R.id.message, View.VISIBLE);
-		views.setViewVisibility(R.id.updating_widget, View.VISIBLE);
+		views.setViewVisibility(R.id.location, View.INVISIBLE);
+		views.setViewVisibility(R.id.country, View.INVISIBLE);
 		views.setViewVisibility(R.id.refresh_icon, View.VISIBLE);
 		views.setViewVisibility(R.id.last_update, View.VISIBLE);
+		views.setViewVisibility(R.id.message, View.VISIBLE);
+		views.setViewVisibility(R.id.updating_widget, View.VISIBLE);
 		return views;
 	}
 	
@@ -230,32 +223,34 @@ public class ThermoWidget extends AppWidgetProvider
         views.setTextViewText(R.id.country, country);
         views.setTextViewText(R.id.last_update, updateTime);
         views = updateTempIconAndDesc(views, temperature, 
-        					  		  tempDescriptions);
+        					  		  tempDescriptions, res);
         return views;
 	}
 			
 	private static RemoteViews updateTempIconAndDesc(RemoteViews updateViews, String strTemp, 
-									   String[] temp_desc) {
+									   				 String[] temp_desc, Resources res) {
 		Integer temperature = Integer.valueOf(strTemp);
+		String temp_desc_tail = res.getString(R.string.label_filter);
+		
 		if (temperature <= 0) {
 			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.lowest_blue);
-			updateViews.setTextViewText(R.id.temp_desc, temp_desc[0]);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[0] + " " + temp_desc_tail);
 		}
 		if (temperature >= 1 && temperature <= 15) {
 			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.blue);
-			updateViews.setTextViewText(R.id.temp_desc, temp_desc[1]);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[1] + " " + temp_desc_tail);
 		}
 		if (temperature >= 16 && temperature <= 26) {
 			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.orange);
-			updateViews.setTextViewText(R.id.temp_desc, temp_desc[2]);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[2] + " " + temp_desc_tail);
 		}
 		if (temperature >= 27 && temperature <= 35) {
 			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.red);
-			updateViews.setTextViewText(R.id.temp_desc, temp_desc[3]);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[3] + " " + temp_desc_tail);
 		}
 		if (temperature >= 36) {
 			updateViews.setImageViewResource(R.id.temp_icon, R.drawable.purple);
-			updateViews.setTextViewText(R.id.temp_desc, temp_desc[4]);
+			updateViews.setTextViewText(R.id.temp_desc, temp_desc[4] + " " + temp_desc_tail);
 		}
 		return updateViews;
 	}
@@ -273,6 +268,9 @@ public class ThermoWidget extends AppWidgetProvider
 											  "com.lemontruck.thermo.MainActivity"));
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
 												  intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		views.setOnClickPendingIntent(R.id.region_left, pendingIntent);
+		views.setOnClickPendingIntent(R.id.region_center_left, pendingIntent);
+		views.setOnClickPendingIntent(R.id.region_center_right, pendingIntent);
 		views.setOnClickPendingIntent(R.id.widget, pendingIntent);
 		
 		/* When the user clicks on the refresh icon, the widget 
@@ -282,18 +280,16 @@ public class ThermoWidget extends AppWidgetProvider
 	    intent.putExtra(ThermoWidget.WIDGET_ID_KEY, ids);
 	    pendingIntent = PendingIntent.getBroadcast(context, 0, 
         										 intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		views.setOnClickPendingIntent(R.id.refresh_icon, pendingIntent);
+		views.setOnClickPendingIntent(R.id.region_right, pendingIntent);
 	}
 	
 	private static class UpdateHandler extends Handler {
 		private Context context;
 		private RemoteViews views;
-		private Resources res;
 	
 		public UpdateHandler(Context context, RemoteViews views) {
 			this.context = context;
 			this.views = views;
-			this.res = context.getResources();
 		}
 		
 		public void handleMessage(Message message) {
@@ -302,25 +298,33 @@ public class ThermoWidget extends AppWidgetProvider
 				try {
 					views = buildUpdate(context,views,weatherInfo);
 					bindActionOnClick(context, views);
-					ThermoWidget.doUpdate(context, views);
+					doUpdate(context, views);
 				} catch (LocationException e) {
 					Log.e(LOG, "Could not update the widget, cause: Unkown location");
-					ThermoWidget.turnOffWidget(context, views, res.getString(R.string.error));
+					Resources res = context.getResources();
+					String errorMsg = res.getString(R.string.error);
+					turnOffWidget(context,views, errorMsg);
 				}
 			} 
 			else {
 				Exception e = (Exception) message.obj;
-				if (e.getClass().getName().equals("ApiException"))
+				if (e.getClass().getName().equals("ApiException")) {
 					Log.e(LOG, "Could not update the widget, cause: API error");
-				else
-					if (e.getClass().getName().equals("ParseException"))
+				}
+				else {
+					if (e.getClass().getName().equals("ParseException")) {
 						Log.e(LOG, "Could not update the widget, cause: HTML paser error");
-					else
+					}
+					else {
 						if (e.getClass().getName().equals("LocationException"))
 							Log.e(LOG, "Could not update the widget, cause: Unkown location");
 						else
 							Log.e(LOG, "Could not update the widget, cause: Unkown cause");
-				ThermoWidget.turnOffWidget(context, views, res.getString(R.string.error));
+					}
+				}
+				Resources res = context.getResources();
+				String errorMsg = res.getString(R.string.error);
+				turnOffWidget(context,views, errorMsg);
 			}
 		}
 	}
