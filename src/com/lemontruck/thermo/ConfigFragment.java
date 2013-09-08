@@ -62,14 +62,12 @@ public class ConfigFragment extends Fragment {
 		loadLocations(context, rootView);
         setSelectedUnit(context,rootView);
         
-
         return rootView;
     }
     
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu items for use in the action bar
-        //MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.action_items, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -79,7 +77,7 @@ public class ConfigFragment extends Fragment {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_save:
-                saveSettings();
+            	saveSettings();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -154,9 +152,9 @@ public class ConfigFragment extends Fragment {
     	TextView footText = (TextView) rootView.findViewById(R.id.foot_text);
     	footText.setPaintFlags(footText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     	if (country.equalsIgnoreCase("italy"))
-			footText.setText(res.getString(R.string.poweredby_it));
+			footText.setText(res.getString(R.string.source_label) + ": " + res.getString(R.string.poweredby_it));
     	else
-			footText.setText(res.getString(R.string.poweredby_py));
+			footText.setText(res.getString(R.string.source_label) + ": " + res.getString(R.string.poweredby_py));
     	
         footText.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -202,19 +200,10 @@ public class ConfigFragment extends Fragment {
         prefs.putString("country", countrySelected);
         prefs.putString("location", locationSelected);
         prefs.putString("unit", unitSelected);
+        prefs.putBoolean("first_time", false);
         prefs.commit();
 
         Log.i(LOG, "Changed the configuration of the widget to Location: " + 
         			locationSelected + " and Unit: " + unitSelected);
-        
-        /*AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        ThermoWidget.forceUpdate(context, true);
-        // Make sure we pass back the original appWidgetId
-        Intent resultValue = new Intent();
-        Bundle extras = resultValue.getExtras();
-        ComponentName provider = new ComponentName(context,ThermoWidget.class);
-        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetManager.getAppWidgetIds(provider));
-        activity.setResult(Activity.RESULT_OK, resultValue);
-        activity.finish();*/
     }
 }
