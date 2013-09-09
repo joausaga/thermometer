@@ -117,6 +117,7 @@ public class StatisticProvider extends IntentService {
     	HashMap<Integer, Date> dates = new HashMap<Integer, Date>();
     	tempList.put("arrayValues", tempByTime);
     	tempList.put("hashDates", dates);
+    	int index = 0;
     	
     	Log.i(MainActivity.LOG, "Temperature size: " + temperatures.size());
     	for (int i = 0; i < temperatures.size(); i++) {
@@ -124,17 +125,19 @@ public class StatisticProvider extends IntentService {
     		Integer tempVal = temperatures.get(i).getTemperature();
     		SimpleDateFormat dateFormat = new SimpleDateFormat(timeFormat);
     		Integer time = Integer.parseInt(dateFormat.format(tempDateTime));
-    		int[] tempMeasure = tempByTime.get(time-1); 
+    		if (timeFormat.equals("HH")) index = time; /* Avoiding negative index when we have time = 0 (0 hours) */
+    		else index = time - 1;
+    		int[] tempMeasure = tempByTime.get(index);
     		if (tempMeasure == null) {
     			tempMeasure = new int[2];
     			tempMeasure[1] = 1;
-    			dates.put(time-1, tempDateTime);
+    			dates.put(index, tempDateTime);
     		}
     		else {
     			tempMeasure[1] += 1;
     		}
     		tempMeasure[0] += tempVal; /* Total measures */
-    		tempByTime.set(time-1, tempMeasure);
+    		tempByTime.set(index, tempMeasure);
     	}
 		
     	return tempList;
