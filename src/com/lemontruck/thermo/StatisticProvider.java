@@ -119,7 +119,6 @@ public class StatisticProvider extends IntentService {
     	tempList.put("hashDates", dates);
     	int index = 0;
     	
-    	Log.i(MainActivity.LOG, "Temperature size: " + temperatures.size());
     	for (int i = 0; i < temperatures.size(); i++) {
     		Date tempDateTime = temperatures.get(i).getDatetime();
     		Integer tempVal = temperatures.get(i).getTemperature();

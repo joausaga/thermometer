@@ -7,6 +7,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -32,14 +33,20 @@ public class WeatherInfoProvider extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		String country = settings.getString("country","Italy");
-    	String location = settings.getString("location","Trento");
+		Resources res = getApplicationContext().getResources();
+		
+		String defCountry = res.getStringArray(R.array.countries)[0];
+		String defLocation = res.getStringArray(R.array.locations_it)[0];
+		
+		String country = settings.getString("country",defCountry);  /* Italy */
+    	String location = settings.getString("location",defLocation); /* Trento */
     	Exception exception = null;
     	
     	Context context = getApplicationContext();
 		
     	WeatherInfo weatherInfoHelper = null;
-    	if (country.equalsIgnoreCase("italy")) {
+    	
+    	if (country.equalsIgnoreCase(defCountry)) {
     		weatherInfoHelper = new ItalyWeatherInfo();
     		weatherInfoHelper.prepareUserAgent(context);
     	}

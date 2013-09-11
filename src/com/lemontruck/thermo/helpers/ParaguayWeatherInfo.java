@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 
 import android.util.Log;
 
+import com.lemontruck.thermo.MainActivity;
 import com.lemontruck.thermo.exceptions.ApiException;
 import com.lemontruck.thermo.exceptions.LocationException;
 import com.lemontruck.thermo.exceptions.ParseException;
@@ -43,7 +44,6 @@ public class ParaguayWeatherInfo extends WeatherInfo {
 	throws ApiException, ParseException, LocationException 
 	{
 		HashMap<String,String> currentTempInfo = new HashMap<String,String>();
-		
 		idLocation = idLocation.replace("—", "o");
         String content = getUrlContent(source);
         Document doc = Jsoup.parse(content);

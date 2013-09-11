@@ -102,9 +102,10 @@ public class ConfigFragment extends Fragment {
     								final View rootView) 
     {	
     	final Resources res = context.getResources();
-    	String[] listCountries = res.getStringArray(R.array.countries);
+    	final String[] listCountries = res.getStringArray(R.array.countries);
+    	String defCountry = listCountries[0];
     	SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, 0);
-    	String currentCountry = settings.getString("country","Italy");
+    	String currentCountry = settings.getString("country",defCountry);
     	
 		int indexLocation = -1;
 		for (int i = 0; i < listCountries.length; i++) {
@@ -126,13 +127,12 @@ public class ConfigFragment extends Fragment {
 				if (pos == 0) {
 					adapter =  ArrayAdapter.createFromResource(parent.getContext(),
 							  				R.array.locations_it, android.R.layout.simple_spinner_item);
-					country = "italy";
 				}
 				else {
 					adapter =  ArrayAdapter.createFromResource(parent.getContext(),
 			  								R.array.locations_py, android.R.layout.simple_spinner_item);
-					country = "paraguay";
 				}
+				country = listCountries[pos];
 				bindLinkFootText(context,country,rootView);
 				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				locations.setAdapter(adapter);
@@ -149,9 +149,12 @@ public class ConfigFragment extends Fragment {
     							  final String country,
     							  final View rootView) {
     	Resources res = context.getResources();
+    	final String defCountry = res.getStringArray(R.array.countries)[0];
+    	
     	TextView footText = (TextView) rootView.findViewById(R.id.foot_text);
     	footText.setPaintFlags(footText.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-    	if (country.equalsIgnoreCase("italy"))
+    	
+    	if (country.equalsIgnoreCase(defCountry))
 			footText.setText(res.getString(R.string.source_label) + ": " + res.getString(R.string.poweredby_it));
     	else
 			footText.setText(res.getString(R.string.source_label) + ": " + res.getString(R.string.poweredby_py));
@@ -160,7 +163,7 @@ public class ConfigFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				Uri url = null;
-				if (country.equalsIgnoreCase("italy"))
+				if (country.equalsIgnoreCase(defCountry))
 					url = Uri.parse(ItalyWeatherInfo.getSourceInfo());
 				else
 					url = Uri.parse(ParaguayWeatherInfo.getSourceInfo());
@@ -172,11 +175,15 @@ public class ConfigFragment extends Fragment {
     
     private void loadLocations(Context context, View rootView) {
     	SharedPreferences settings = activity.getSharedPreferences(PREFS_NAME, 0);
-    	String currentCountry = settings.getString("country","Italy");
+    	
+    	Resources res = context.getResources();
+    	String defCountry = res.getStringArray(R.array.countries)[0];
+    	
+    	String currentCountry = settings.getString("country",defCountry);
     	locations = (Spinner) rootView.findViewById(R.id.location_list);
     	ArrayAdapter<CharSequence> adapter = null;
     	
-    	if (currentCountry.equalsIgnoreCase("italy"))
+    	if (currentCountry.equalsIgnoreCase(defCountry))
     		adapter =  ArrayAdapter.createFromResource(context,
 	  				   R.array.locations_it, android.R.layout.simple_spinner_item);
     	else
