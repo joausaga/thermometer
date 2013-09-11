@@ -20,10 +20,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.lemontruck.thermo.exceptions.LocationException;;
+import com.lemontruck.thermo.exceptions.LocationException;
 
 public class ThermoWidget extends AppWidgetProvider
 {
@@ -60,12 +62,11 @@ public class ThermoWidget extends AppWidgetProvider
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		Log.i(MainActivity.LOG, "On onReceive!");
+		super.onReceive(context, intent);
 		if (intent.hasExtra(WIDGET_ID_KEY)) {
 	        int[] ids = intent.getExtras().getIntArray(WIDGET_ID_KEY);
 	        this.onUpdate(context, AppWidgetManager.getInstance(context), ids);
-	    } 
-	    else {
-	    	super.onReceive(context, intent);
 	    }
 	}
 	
@@ -105,12 +106,12 @@ public class ThermoWidget extends AppWidgetProvider
 	
 	private static void updateTemperature(Context context, RemoteViews views) {
 		views = turnOnTempInfoContainers(views);
-		views = showUpdatingWheel(context, views);
+		views = showUpdatingWheel(views);
 		doUpdate(context,views);
 		getWeatherInfo(context, views);
 	}
 	
-	private static RemoteViews showUpdatingWheel(Context context, RemoteViews updateViews) {
+	private static RemoteViews showUpdatingWheel(RemoteViews updateViews) {
 		updateViews.setViewVisibility(R.id.temp_info, View.GONE);
 		updateViews.setViewVisibility(R.id.updating_temp, View.VISIBLE);
 		return updateViews;
@@ -141,6 +142,7 @@ public class ThermoWidget extends AppWidgetProvider
 		views.setViewVisibility(R.id.updating_widget, View.GONE);
 		views.setViewVisibility(R.id.refresh_icon, View.GONE);
 		views.setViewVisibility(R.id.last_update, View.GONE);
+		views.setViewVisibility(R.id.updating_temp, View.GONE);
 		return views;
 	}
 	
@@ -167,6 +169,7 @@ public class ThermoWidget extends AppWidgetProvider
 		views.setViewVisibility(R.id.last_update, View.VISIBLE);
 		views.setViewVisibility(R.id.message, View.VISIBLE);
 		views.setViewVisibility(R.id.updating_widget, View.VISIBLE);
+		views.setViewVisibility(R.id.updating_temp, View.GONE);
 		return views;
 	}
 	
@@ -275,12 +278,14 @@ public class ThermoWidget extends AppWidgetProvider
 		
 		/* When the user clicks on the refresh icon, the widget 
 	     * has to call this to update the widget */
-		intent = new Intent();
+		intent = new Intent(context, ThermoWidget.class);
 	    intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 	    intent.putExtra(ThermoWidget.WIDGET_ID_KEY, ids);
 	    pendingIntent = PendingIntent.getBroadcast(context, 0, 
-        										 intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		views.setOnClickPendingIntent(R.id.region_right, pendingIntent);
+        										   intent, PendingIntent.FLAG_UPDATE_CURRENT);
+	    views.setOnClickPendingIntent(R.id.refresh_icon, pendingIntent);
+	    views.setOnClickPendingIntent(R.id.last_update, pendingIntent);
+	    views.setOnClickPendingIntent(R.id.region_right, pendingIntent);
 	}
 	
 	private static class UpdateHandler extends Handler {
