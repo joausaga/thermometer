@@ -136,6 +136,7 @@
 	        android:layout_height="wrap_content"
 	        android:gravity="bottom"
 	        android:scaleType="center"
+	        android:clickable="true"
 	        android:src="@drawable/refresh" />
 
 	    <TextView
@@ -143,6 +144,7 @@
 	        style="@style/Text.Tiny"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
+	        android:clickable="true"
 	        android:gravity="center" />
 	        <!-- android:text="10:00" -->
 	</LinearLayout>
