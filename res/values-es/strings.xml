@@ -40,7 +40,7 @@
 	<string name="last_updated">Última actualización</string>
 	<string name="label_cancel_button">Cancelar</string>
 	<string name="label_save_button">Guardar</string>
-	<string name="label_tab_settings">CONFIGURACIONES</string>
+	<string name="label_tab_settings">AJUSTES</string>
 	<string name="label_tab_statistics">ESTADISTICAS</string>
 	<string name="label_average">Prom</string>
 	<string name="label_min">Min</string>
