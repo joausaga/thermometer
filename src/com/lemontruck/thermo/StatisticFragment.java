@@ -18,11 +18,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
@@ -64,7 +67,7 @@ public class StatisticFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             				 Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.statistic_fragment, container, false);
+    	View view = inflater.inflate(R.layout.statistic_fragment, container, false);
         context = activity.getApplicationContext();
 		
 		filter = TODAY;
@@ -145,6 +148,7 @@ public class StatisticFragment extends Fragment {
     
     private static View populateTemperatureList(View view, HashMap<String,Object> tempValues) {
     	TableLayout staTable = (TableLayout) view.findViewById(R.id.statistic_table);
+    	TableLayout staTableHeader = (TableLayout) view.findViewById(R.id.statistic_table_header);
     	String header = "";
     	Resources res = context.getResources();
     	String tail = "";
@@ -177,65 +181,162 @@ public class StatisticFragment extends Fragment {
     	HashMap<Integer, Date> dates = (HashMap<Integer, Date>) tempValues.get("hashDates");
 		ArrayList<int[]> tempByTime = (ArrayList<int[]>) tempValues.get("arrayValues");
 		staTable.removeAllViews();
-		staTable = setTableHeaders(staTable,header);
+		staTableHeader.removeAllViews();
+		Integer maxColLenght = 0;
+		String dateText = "";
+		HashMap<String,String> dummyRow = new HashMap<String,String>();
+		staTableHeader = createTableHeader(staTableHeader, header, false);
+		staTable = createTableHeader(staTable, header, true);
 		for (int i = 0; i < tempByTime.size(); i++) {
 			if (tempByTime.get(i) != null) {
 				if (tempByTime.get(i)[1] == 0) tempByTime.get(i)[1] = 1; //An ad-hoc hack to solve (temporally) bad records in the DB  
 				Integer avgTemp = tempByTime.get(i)[0] / tempByTime.get(i)[1];
 				Date dateTemp = dates.get(i);
-				staTable = addToStatisticTable(staTable, dateFormat.format(dateTemp), avgTemp.toString(), tail);
+				Integer minTemp = tempByTime.get(i)[3];
+				Integer maxTemp = tempByTime.get(i)[2];
+				dateText = dateFormat.format(dateTemp) + tail;
+				if (dateText.length() > maxColLenght) {
+					maxColLenght = dateText.length();
+					dummyRow.put("date", dateText);
+					dummyRow.put("avg", avgTemp.toString());
+					dummyRow.put("min", minTemp.toString());
+					dummyRow.put("max", maxTemp.toString());					
+				}
+				staTable = addToStatisticTable(staTable, view, dateText, avgTemp.toString(), minTemp, maxTemp);
 			}
-		}
+		}		
+		staTableHeader = createDummyRow(staTableHeader,dummyRow);
 		
 		return view;
     }
     
-    private static TableLayout setTableHeaders(TableLayout table, String dateColName) {
+    private static TableLayout createTableHeader(TableLayout table, String date, Boolean isDummyHeader) {
     	Resources res = context.getResources();
     	
     	TableRow row = new TableRow(context);
     	TableRow.LayoutParams rowParams = new TableRow.LayoutParams(); 
-    	rowParams.gravity = Gravity.LEFT;
+    	rowParams.height = LayoutParams.WRAP_CONTENT;
+    	rowParams.width = LayoutParams.WRAP_CONTENT;
     	
     	TableRow.LayoutParams colParams = new TableRow.LayoutParams();
     	colParams.gravity = Gravity.CENTER;
-    	TextView dateCol = new TextView(context);  
-        dateCol.setText(dateColName);
-        row.addView(dateCol, colParams);
+    	if (isDummyHeader) colParams.height = getDp(0);
+    	else colParams.height = LayoutParams.WRAP_CONTENT;
+    	colParams.width = LayoutParams.WRAP_CONTENT;
+        row.addView(getCell(date,Color.parseColor("#c0c0c0")), colParams);
         
         TableRow.LayoutParams colParams2 = new TableRow.LayoutParams();
-        colParams2.gravity = Gravity.CENTER;
-        TextView avgTempCol = new TextView(context);  
-        avgTempCol.setText(res.getString(R.string.table_title_avg_temp));
-        row.addView(avgTempCol, colParams2);
+    	colParams2.gravity = Gravity.CENTER;
+    	if (isDummyHeader) colParams2.height = getDp(0);  
+    	else colParams2.height = LayoutParams.WRAP_CONTENT;
+    	colParams2.width = LayoutParams.WRAP_CONTENT;
+        row.addView(getCell(res.getString(R.string.label_min),Color.parseColor("#33B5E5")), colParams2);
+        
+        TableRow.LayoutParams colParams3 = new TableRow.LayoutParams();
+    	colParams3.gravity = Gravity.CENTER;
+    	if (isDummyHeader) colParams3.height = getDp(0); 
+    	else colParams3.height = LayoutParams.WRAP_CONTENT;
+    	colParams3.width = LayoutParams.WRAP_CONTENT;
+    	row.addView(getCell(res.getString(R.string.label_average),Color.WHITE), colParams3);
+        
+        TableRow.LayoutParams colParams4 = new TableRow.LayoutParams();
+    	colParams4.gravity = Gravity.CENTER;
+    	if (isDummyHeader) colParams4.height = getDp(0);
+    	else colParams4.height = LayoutParams.WRAP_CONTENT;
+    	colParams4.width = LayoutParams.WRAP_CONTENT;
+    	row.addView(getCell(res.getString(R.string.label_max),Color.parseColor("#FF4444")), colParams4);
         
         table.addView(row, rowParams);
     	
-    	return table;
+        return table;
     }
     
-    private static TableLayout addToStatisticTable(TableLayout table, String date, String avgTemp, String tail) {
+    private static TableLayout createDummyRow(TableLayout table, HashMap<String,String> dummyRow) {
+    	
     	TableRow row = new TableRow(context);
     	TableRow.LayoutParams rowParams = new TableRow.LayoutParams(); 
-    	rowParams.gravity = Gravity.LEFT;
+    	rowParams.height = LayoutParams.WRAP_CONTENT;
+    	rowParams.width = LayoutParams.WRAP_CONTENT;
     	
     	TableRow.LayoutParams colParams = new TableRow.LayoutParams();
     	colParams.gravity = Gravity.CENTER;
-    	TextView dateText = new TextView(context);  
-        dateText.setText(date + tail);
-        dateText.setTextColor(Color.WHITE);
-        row.addView(dateText, colParams);
+    	colParams.height = getDp(0);
+    	colParams.width = LayoutParams.WRAP_CONTENT;
+        row.addView(getCell(dummyRow.get("date"),Color.WHITE), colParams);
         
         TableRow.LayoutParams colParams2 = new TableRow.LayoutParams();
-        colParams2.gravity = Gravity.CENTER;
-        TextView avgTempText = new TextView(context);  
-        avgTempText.setText(avgTemp+"\u00B0");
-        avgTempText.setTextColor(Color.WHITE);
-        row.addView(avgTempText, colParams2);
+    	colParams2.gravity = Gravity.CENTER;
+    	colParams2.height = getDp(0);
+    	colParams2.width = LayoutParams.WRAP_CONTENT;
+        row.addView(getCell(dummyRow.get("min")+"\u00B0",Color.WHITE), colParams2);
+        
+        TableRow.LayoutParams colParams3 = new TableRow.LayoutParams();
+    	colParams3.gravity = Gravity.CENTER;
+    	colParams3.height = getDp(0);
+    	colParams3.width = LayoutParams.WRAP_CONTENT;
+    	row.addView(getCell(dummyRow.get("avg")+"\u00B0",Color.WHITE), colParams3);
+        
+        TableRow.LayoutParams colParams4 = new TableRow.LayoutParams();
+    	colParams4.gravity = Gravity.CENTER;
+    	colParams4.height = getDp(0);
+    	colParams4.width = LayoutParams.WRAP_CONTENT;
+    	row.addView(getCell(dummyRow.get("max")+"\u00B0",Color.WHITE), colParams4);
         
         table.addView(row, rowParams);
+    	
+        return table;
+    }
+    
+    private static TableLayout addToStatisticTable(TableLayout table, View view, String date, String avgTemp, 
+    											   Integer minTemp, Integer maxTemp) 
+    {
+    	TableRow row = new TableRow(context);
+    	TableRow.LayoutParams rowParams = new TableRow.LayoutParams(); 
+    	rowParams.height = LayoutParams.WRAP_CONTENT;
+    	rowParams.width = LayoutParams.WRAP_CONTENT;
+    	rowParams.gravity = Gravity.CENTER;
+    	
+    	TableRow.LayoutParams colParams = new TableRow.LayoutParams();
+    	colParams.gravity = Gravity.CENTER;
+    	colParams.height = LayoutParams.WRAP_CONTENT;
+    	colParams.width = LayoutParams.WRAP_CONTENT;
+        row.addView(getCell(date,Color.WHITE), colParams);
         
+        TableRow.LayoutParams colParams2 = new TableRow.LayoutParams();
+    	colParams2.gravity = Gravity.CENTER;
+    	colParams2.height = LayoutParams.WRAP_CONTENT;
+    	colParams2.width = LayoutParams.WRAP_CONTENT;
+        row.addView(getCell(minTemp+"\u00B0",Color.WHITE), colParams2);
+        
+        TableRow.LayoutParams colParams3 = new TableRow.LayoutParams();
+    	colParams3.gravity = Gravity.CENTER;
+    	colParams3.height = LayoutParams.WRAP_CONTENT;
+    	colParams3.width = LayoutParams.WRAP_CONTENT;
+        row.addView(getCell(avgTemp+"\u00B0",Color.WHITE), colParams3);
+        
+        TableRow.LayoutParams colParams4 = new TableRow.LayoutParams();
+    	colParams4.gravity = Gravity.CENTER;
+    	colParams4.height = LayoutParams.WRAP_CONTENT;
+    	colParams4.width = LayoutParams.WRAP_CONTENT;
+        row.addView(getCell(maxTemp+"\u00B0",Color.WHITE), colParams4);
+        
+        table.addView(row, rowParams);
+    	
         return table; 
+    }
+    
+    private static TextView getCell(String text, Integer color) {
+    	TextView cellText = new TextView(context);
+        cellText.setText(text);
+        cellText.setTextColor(color);
+    	
+    	return cellText;
+    }
+    
+    private static int getDp(int px) {
+    	float scale = context.getResources().getDisplayMetrics().density;
+    	int sizeInDp = (int) (px*scale + 0.5f);
+    	return sizeInDp;
     }
     
     private void getStatistics(View view) { 

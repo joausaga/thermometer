@@ -144,20 +144,22 @@
         android:layout_height="2dip"
         android:background="@color/silver" />
     
+   	<TableLayout
+       	android:layout_height="wrap_content"
+       	android:layout_width="match_parent"
+       	android:id="@+id/statistic_table_header"
+       	android:layout_marginTop="5dp"
+       	android:stretchColumns="*" >
+   	</TableLayout>
     <ScrollView
-        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp" >
-
+        android:layout_height="wrap_content" >
         <TableLayout
             android:id="@+id/statistic_table"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:stretchColumns="*" >
-            
         </TableLayout>
-
     </ScrollView>
-
+    
 </LinearLayout>
