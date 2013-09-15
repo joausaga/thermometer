@@ -128,14 +128,21 @@ public class StatisticProvider extends IntentService {
     		else index = time - 1;
     		int[] tempMeasure = tempByTime.get(index);
     		if (tempMeasure == null) {
-    			tempMeasure = new int[2];
+    			tempMeasure = new int[4];  /* 0: for the sum of the values, 1: for the number of values, 2: for the max value and 3: for the min value */
     			tempMeasure[1] = 1;
+    			tempMeasure[0] = 0;
+    			tempMeasure[2] = tempVal;
+    			tempMeasure[3] = tempVal;
     			dates.put(index, tempDateTime);
     		}
     		else {
     			tempMeasure[1] += 1;
     		}
     		tempMeasure[0] += tempVal; /* Total measures */
+    		if (tempVal > tempMeasure[2]) /* See if the value is greater than the existing maximum */
+    			tempMeasure[2] = tempVal;
+    		if (tempVal < tempMeasure[3]) /* See if the value if lower than the existing minimum */
+    			tempMeasure[3] = tempVal;
     		tempByTime.set(index, tempMeasure);
     	}
 		
