@@ -16,4 +16,4 @@ Features
 * Automatically, every 30 minutes, the application updates the temperature information and refresh the widget. The update can be forced by pressing on the refresh icon located on the right side of the widget.
 * Languages supported: English, Italian and Spanish.
 
-<a href="https://play.google.com/store/apps/details?id=com.lemontruck.thermo"><img src="http://www.moves-app.com/assets/google-play-badge-big.png"/></a>
+<a href="https://play.google.com/store/apps/details?id=com.lemontruck.thermo"><img src="https://ssl.gstatic.com/accounts/services/mail/buttons/google_play_es.png"/></a>
