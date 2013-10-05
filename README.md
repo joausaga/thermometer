@@ -1,4 +1,4 @@
-Thermometer (Meto Thermometer)
+Thermometer (Meteo Thermometer)
 ==============================
 
 It is Android application that leverages weather local services to provide the user highly accurate weather temperature information. This information is displayed in a simple and nice home-screen widget.
