@@ -10,7 +10,7 @@ So far, the application supports eight cities of the province of <a href="http:/
 
 Features
 --------
-* A configuration tab is provided to allow the user choose the city, as well as select the temperature unit of measurement, Celsius or Fahrenheit.
+* A configuration tab is provided to allow the user choose the city, as well as to select the temperature unit of measurement, Celsius or Fahrenheit.
 * The application keeps a local registry of the temperature samples. Later on, it uses these samples to calculate basic statistic information about the temperature samples collected.
 * A second tab shows these statistics information grouped by preset filters: day, week, month, semester and year.
 * Automatically, every 30 minutes, the application updates the temperature information and refresh the widget. The update can be forced by pressing on the refresh icon located on the right side of the widget.
