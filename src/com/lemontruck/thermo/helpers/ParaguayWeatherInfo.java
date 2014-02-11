@@ -1,5 +1,6 @@
 package com.lemontruck.thermo.helpers;
 
+import java.text.Normalizer;
 import java.util.HashMap;
 
 import org.jsoup.Jsoup;
@@ -9,7 +10,6 @@ import org.jsoup.select.Elements;
 
 import android.util.Log;
 
-import com.lemontruck.thermo.MainActivity;
 import com.lemontruck.thermo.exceptions.ApiException;
 import com.lemontruck.thermo.exceptions.LocationException;
 import com.lemontruck.thermo.exceptions.ParseException;
@@ -44,7 +44,9 @@ public class ParaguayWeatherInfo extends WeatherInfo {
 	throws ApiException, ParseException, LocationException 
 	{
 		HashMap<String,String> currentTempInfo = new HashMap<String,String>();
-		idLocation = idLocation.replace("—", "o");
+		
+		idLocation = Normalizer.normalize(idLocation, Normalizer.Form.NFD);
+		idLocation = idLocation.replaceAll("[^\\p{ASCII}]", "");
         String content = getUrlContent(source);
         Document doc = Jsoup.parse(content);
         Elements e = doc.getElementsByAttributeValue("class","Estilo7");
