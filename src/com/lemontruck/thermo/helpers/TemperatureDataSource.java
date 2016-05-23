@@ -197,7 +197,8 @@ public class TemperatureDataSource {
 	  private Temperature cursorToTemperature(Cursor cursor) {
 		  Temperature temp = new Temperature();
 		  temp.setId(cursor.getLong(0));
-		  temp.setTemperature(Integer.parseInt(cursor.getString(1)));
+		  Double doubleTemp = Double.parseDouble(cursor.getString(1));
+		  temp.setTemperature(doubleTemp.intValue());
 		  temp.setDatetime(cursor.getString(2));
 		  temp.setCountry(cursor.getString(3));
 		  temp.setCity(cursor.getString(4));

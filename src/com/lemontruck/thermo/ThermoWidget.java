@@ -305,7 +305,7 @@ public class ThermoWidget extends AppWidgetProvider
 					bindActionOnClick(context, views);
 					doUpdate(context, views);
 				} catch (LocationException e) {
-					Log.e(LOG, "Could not update the widget, cause: Unkown location");
+					Log.e(LOG, "Could not update the widget, cause: Unknown location");
 					Resources res = context.getResources();
 					String errorMsg = res.getString(R.string.error);
 					turnOffWidget(context,views, errorMsg);
@@ -313,18 +313,18 @@ public class ThermoWidget extends AppWidgetProvider
 			} 
 			else {
 				Exception e = (Exception) message.obj;
-				if (e.getClass().getName().equals("ApiException")) {
+				if (e.getClass().getName().contains("ApiException")) {
 					Log.e(LOG, "Could not update the widget, cause: API error");
 				}
 				else {
-					if (e.getClass().getName().equals("ParseException")) {
+					if (e.getClass().getName().contains("ParseException")) {
 						Log.e(LOG, "Could not update the widget, cause: HTML paser error");
 					}
 					else {
-						if (e.getClass().getName().equals("LocationException"))
-							Log.e(LOG, "Could not update the widget, cause: Unkown location");
+						if (e.getClass().getName().contains("LocationException"))
+							Log.e(LOG, "Could not update the widget, cause: " + e.getMessage());
 						else
-							Log.e(LOG, "Could not update the widget, cause: Unkown cause");
+							Log.e(LOG, "Could not update the widget, cause: Unknown cause");
 					}
 				}
 				Resources res = context.getResources();

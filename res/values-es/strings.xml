@@ -23,6 +23,22 @@
 	<string-array name="locations_py">
 		<item>Asunción</item>
 		<item>Ciudad del Este</item>
+		<item>San Lorenzo</item>
+		<item>Pozo Colorado</item>
+		<item>Hohenau</item>
+		<item>San Bernardino</item>
+		<item>Caazapá</item>
+		<item>Tte. Irala Fernández</item>
+		<item>Luque</item>
+		<item>Lambare</item>
+		<item>Villarrica</item>
+		<item>Capitán Meza</item>
+		<item>Pilar</item>
+		<item>Concepción</item>
+		<item>San Pedro</item>
+		<item>Saltos del Guairá</item>
+		<item>Ayolas</item>
+		<item>Vallemi</item>
 	</string-array>
     <string name="choose_location" formatted="false">Elija un lugar</string>
     <string name="choose_temperature_unit" formatted="false">Seleccione la unidad con la que desea medir la temperatura</string>
